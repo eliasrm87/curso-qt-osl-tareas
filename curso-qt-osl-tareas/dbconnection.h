@@ -11,6 +11,7 @@
 #include <QDesktopServices>
 #include <QDir>
 
+#include <QDebug>
 typedef QMap<QString, QVariant> SqlRow;
 
 inline static bool ConecToDb(QSqlDatabase &Db, QString dbName)

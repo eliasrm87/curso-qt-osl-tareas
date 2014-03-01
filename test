@@ -1,0 +1,12 @@
+#include <QMainWindow>
+#include <QSqlDatabase>
+#include "dbconnection.h"
+
+//Setup database
+ConecToDb(db_, "tareas");
+
+db_.exec("CREATE TABLE IF NOT EXISTS tareas ("
+          "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+          "name TEXT,"
+          "date TEXT"
+          ");");

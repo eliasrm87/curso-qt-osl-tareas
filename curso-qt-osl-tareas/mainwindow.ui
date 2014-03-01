@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>722</width>
+    <height>473</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>722</width>
+    <height>473</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>722</width>
+    <height>473</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QCalendarWidget" name="calendar_">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>341</width>
+      <height>191</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 13pt &quot;Source Code Pro&quot;;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>210</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Nombre:</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEditName">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>210</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>390</y>
+      <width>91</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Actualizar</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEditDesc">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>250</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>250</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Descripcion:</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEditDia">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>290</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>290</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Dia:</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEditCateg">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>330</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>330</y>
+      <width>91</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Gategoria:</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>0</y>
+      <width>381</width>
+      <height>441</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>390</y>
+      <width>91</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Nueva</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>390</y>
+      <width>87</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Borrar</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>722</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <action name="actionAdd_Task">
+   <property name="text">
+    <string>Add Task</string>
+   </property>
+  </action>
+  <action name="actionDelete_Task">
+   <property name="text">
+    <string>Delete Task</string>
+   </property>
+  </action>
+  <action name="actionSelect_Today">
+   <property name="text">
+    <string>Select Today</string>
+   </property>
+  </action>
+  <action name="actionAdd_Category">
+   <property name="text">
+    <string>Add Category</string>
+   </property>
+  </action>
+  <action name="actionNueva_Tarea">
+   <property name="text">
+    <string>Nueva Tarea</string>
+   </property>
+  </action>
+  <action name="actionCategorias">
+   <property name="text">
+    <string>Categorias</string>
+   </property>
+  </action>
+  <action name="actionCategorias_2">
+   <property name="text">
+    <string>Categorias</string>
+   </property>
+  </action>
+  <action name="actionEtiquetas">
+   <property name="text">
+    <string>Etiquetas</string>
+   </property>
+  </action>
+  <action name="actionVer_Hoy">
+   <property name="text">
+    <string>Ver Hoy</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

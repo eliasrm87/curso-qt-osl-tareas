@@ -12,8 +12,12 @@ TARGET = curso-qt-osl-tareas-exe
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+SOURCES += main.cpp \
+    mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    dbconnection.h
+HEADERS  += \
+    dbconnection.h \
+    mainwindow.h
+
+FORMS += \
+    mainwindow.ui
