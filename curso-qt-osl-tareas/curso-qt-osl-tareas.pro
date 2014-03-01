@@ -13,7 +13,16 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    jdialog.cpp
 
 HEADERS  += mainwindow.h \
-    dbconnection.h
+    dbconnection.h \
+    jdialog.h
+
+OTHER_FILES +=
+
+RESOURCES += \
+    recursos.qrc
+
+FORMS +=

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>img/buscar.png</file>
+        <file>img/add.png</file>
+    </qresource>
+</RCC>
