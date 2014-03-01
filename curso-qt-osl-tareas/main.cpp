@@ -1,10 +1,10 @@
-#include "mainwindow.h"
+#include "mainwindowform.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    MainWindowForm w;
 
     QCoreApplication::setOrganizationName("Igeko");
     QCoreApplication::setOrganizationDomain("igeko.es");
