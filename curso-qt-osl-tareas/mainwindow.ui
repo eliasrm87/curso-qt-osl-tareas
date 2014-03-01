@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>635</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="0">
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tareas">
+         <attribute name="title">
+          <string>Tareas</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="1">
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>Etiquetas</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <widget class="QComboBox" name="comboBox_2"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="QTextEdit" name="textEdit">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>75</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>75</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>Categorias</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <widget class="QComboBox" name="comboCategorias"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QTableWidget" name="tableWidget">
+            <column>
+             <property name="text">
+              <string>Tarea</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Fecha</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Categoria</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Realizado</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="categorias">
+         <attribute name="title">
+          <string>Categorias</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QTableWidget" name="tableWidget_2">
+            <column>
+             <property name="text">
+              <string>Nombre</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Descripcion</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="etiquetas">
+         <attribute name="title">
+          <string>Etiquetas</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QTableWidget" name="tableWidget_3">
+            <column>
+             <property name="text">
+              <string notr="true">Nombre</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>635</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuArchivo">
+    <property name="title">
+     <string>Archivo</string>
+    </property>
+    <addaction name="actionSalir"/>
+   </widget>
+   <widget class="QMenu" name="menuTarea">
+    <property name="title">
+     <string>Tarea</string>
+    </property>
+    <addaction name="actionNueva"/>
+   </widget>
+   <widget class="QMenu" name="menuCategorias">
+    <property name="title">
+     <string>Categorias</string>
+    </property>
+    <addaction name="actionNueva_categoria"/>
+   </widget>
+   <widget class="QMenu" name="menuEtiquetas">
+    <property name="title">
+     <string>Etiquetas</string>
+    </property>
+    <addaction name="actionNueva_etiqueta"/>
+   </widget>
+   <addaction name="menuArchivo"/>
+   <addaction name="menuTarea"/>
+   <addaction name="menuCategorias"/>
+   <addaction name="menuEtiquetas"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSalir">
+   <property name="text">
+    <string>Salir</string>
+   </property>
+  </action>
+  <action name="actionNueva">
+   <property name="text">
+    <string>Nueva tarea</string>
+   </property>
+  </action>
+  <action name="actionNueva_categoria">
+   <property name="text">
+    <string>Nueva categoria</string>
+   </property>
+  </action>
+  <action name="actionNueva_etiqueta">
+   <property name="text">
+    <string>Nueva etiqueta</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("igeko.es");
     QCoreApplication::setApplicationName("curso-qt-osl-tareas");
 
-    w.show();
+    w.showMaximized();
 
     return a.exec();
 }
