@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSqlDatabase>
 #include <QDebug>
 #include "dbconnection.h"
 
@@ -21,10 +20,20 @@ public:
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db_;
+    bool addingTarea_;
+    bool addingCategoria_;
+    bool addingEtiqueta_;
 
 private slots:
     void addTarea();
-    void saveTarea(int row,int col);
+    void addCategoria();
+    void addEtiqueta();
+    void onTareasCellChanged(int row, int column);
+    void onCategoriasCellChanged(int row, int column);
+
+    void onLoadTareas();
+    void onLoadCategorias();
+    void onLoadEtiquetas();
 };
 
 #endif // MAINWINDOW_H

@@ -40,13 +40,13 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="0" column="0">
-              <widget class="QComboBox" name="comboBox_2"/>
+              <widget class="QComboBox" name="comboEtiquetas"/>
              </item>
             </layout>
            </widget>
           </item>
           <item row="4" column="0" colspan="2">
-           <widget class="QTextEdit" name="textEdit">
+           <widget class="QTextEdit" name="tareaDescription">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -74,7 +74,7 @@
            </widget>
           </item>
           <item row="3" column="0" colspan="2">
-           <widget class="QTableWidget" name="tableWidget">
+           <widget class="QTableWidget" name="tableTareas">
             <column>
              <property name="text">
               <string>Tarea</string>
@@ -92,6 +92,11 @@
             </column>
             <column>
              <property name="text">
+              <string>Etiquetas</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
               <string>Realizado</string>
              </property>
             </column>
@@ -105,7 +110,7 @@
          </attribute>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <widget class="QTableWidget" name="tableWidget_2">
+           <widget class="QTableWidget" name="tableCategorias">
             <column>
              <property name="text">
               <string>Nombre</string>
@@ -126,7 +131,7 @@
          </attribute>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <widget class="QTableWidget" name="tableWidget_3">
+           <widget class="QTableWidget" name="tableEtiquetas">
             <column>
              <property name="text">
               <string notr="true">Nombre</string>
@@ -167,13 +172,13 @@
     <property name="title">
      <string>Categorias</string>
     </property>
-    <addaction name="actionNueva_categoria"/>
+    <addaction name="categoriaNueva"/>
    </widget>
    <widget class="QMenu" name="menuEtiquetas">
     <property name="title">
      <string>Etiquetas</string>
     </property>
-    <addaction name="actionNueva_etiqueta"/>
+    <addaction name="etiquetaNueva"/>
    </widget>
    <addaction name="menuArchivo"/>
    <addaction name="menuTarea"/>
@@ -191,12 +196,12 @@
     <string>Nueva tarea</string>
    </property>
   </action>
-  <action name="actionNueva_categoria">
+  <action name="categoriaNueva">
    <property name="text">
     <string>Nueva categoria</string>
    </property>
   </action>
-  <action name="actionNueva_etiqueta">
+  <action name="etiquetaNueva">
    <property name="text">
     <string>Nueva etiqueta</string>
    </property>
