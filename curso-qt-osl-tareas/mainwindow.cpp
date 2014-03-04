@@ -49,14 +49,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Conect
     connect(ui->actionNueva,        SIGNAL(triggered()),                this, SLOT(addTarea()));
-    connect(ui->tableTareas,        SIGNAL(cellChanged(int,int)),       this, SLOT(onTareasCellChanged(int,int)));
+    connect(ui->tableTareas,        SIGNAL(cellChanged(int,int)),       this, SLOT(onTareasCellChanged(int)));
     connect(ui->comboCategorias,    SIGNAL(currentIndexChanged(int)),   this, SLOT(onLoadTareas()));
 
     connect(ui->categoriaNueva,     SIGNAL(triggered()),                this, SLOT(addCategoria()));
-    connect(ui->tableCategorias,    SIGNAL(cellChanged(int,int)),       this, SLOT(onCategoriasCellChanged(int,int)));
+    connect(ui->tableCategorias,    SIGNAL(cellChanged(int,int)),       this, SLOT(onCategoriasCellChanged(int)));
 
     connect(ui->etiquetaNueva,      SIGNAL(triggered()),                this, SLOT(addEtiqueta()));
+    connect(ui->tableEtiquetas,     SIGNAL(cellChanged(int,int)),       this, SLOT(onEtiquetasCellChanged(int)));
 
+    connect(ui->tableTareas,        SIGNAL(cellClicked(int,int)),       this, SLOT(onDescriptionTask(int, int)));
 
     addingTarea_ = false;
     addingCategoria_ = false;
@@ -88,7 +90,7 @@ void MainWindow::addTarea() {
     addingTarea_ = false;
 }
 
-void MainWindow::onTareasCellChanged(int row, int column) {
+void MainWindow::onTareasCellChanged(int row) {
     if (addingTarea_)
         return;
 
@@ -133,6 +135,11 @@ void MainWindow::onLoadTareas()
                  "FROM tareas "
                  "WHERE id_categ = " + ui->comboCategorias->currentData().toString());
 
+    QSqlQuery qCategoria = db_.exec("SELECT * "
+                                    "FROM categorias "
+                                    "WHERE id = " + ui->comboCategorias->currentData().toString());
+    qCategoria.next();
+
     while (q.next()) {
         //Añadimos la tarea a la tabla de categorias
         int rowNumber = ui->tableTareas->rowCount();
@@ -142,8 +149,8 @@ void MainWindow::onLoadTareas()
         QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
         item->setData(Qt::UserRole, id);
         ui->tableTareas->setItem(rowNumber, 0, item);
-
         ui->tableTareas->setItem(rowNumber, 1, new QTableWidgetItem(GetField(q, "date").toString()));
+        ui->tableTareas->setItem(rowNumber, 2, new QTableWidgetItem(GetField(qCategoria, "name").toString()));
 
         item = new QTableWidgetItem("");
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
@@ -169,7 +176,7 @@ void MainWindow::addCategoria() {
     addingCategoria_ = false;
 }
 
-void MainWindow::onCategoriasCellChanged(int row, int column) {
+void MainWindow::onCategoriasCellChanged(int row) {
     if (addingCategoria_)
         return;
 
@@ -181,12 +188,12 @@ void MainWindow::onCategoriasCellChanged(int row, int column) {
                  "VALUES ("+QString("'%1','%2');" )\
                  .arg(ui->tableCategorias->item(row, 0)->text())\
                  .arg(ui->tableCategorias->item(row, 1)->text()));
-        query = db_.exec("INSERT INTO categorias(name, descripcion) VALUES ('"+ ui->tableCategorias->item(row, 0)->text() +"','"+ ui->tableCategorias->item(row, 1)->text() +"');");
 
         ui->tableCategorias->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
     } else {
-        query = db_.exec("UPDATE tareas "
-                 "SET "+QString("name='%1',descripcion='%2'" )\
+        qDebug() << "Entro en el update";
+        query = db_.exec("UPDATE categorias "
+                 "SET "+QString("name='%1',descripcion='%2' ")\
                  .arg(ui->tableCategorias->item(row, 0)->text())\
                  .arg(ui->tableCategorias->item(row, 1)->text()) +
                  "WHERE id = " + ui->tableCategorias->item(row, 0)->data(Qt::UserRole).toString() + ";");
@@ -213,6 +220,7 @@ void MainWindow::onLoadCategorias() {
         ui->tableCategorias->insertRow(rowNumber);
         QTableWidgetItem* nombre = new QTableWidgetItem(GetField(qCategorias, "name").toString());
         ui->tableCategorias->setItem(rowNumber, 0, nombre);
+
         QTableWidgetItem* descripcion = new QTableWidgetItem(GetField(qCategorias, "descripcion").toString());
         ui->tableCategorias->setItem(rowNumber, 1, descripcion);
     }
@@ -229,30 +237,28 @@ void MainWindow::addEtiqueta() {
     addingEtiqueta_ = false;
 }
 
-//void MainWindow::onEtiquetasCellChanged(int row, int column) {
-//    if (addingEtiqueta_)
-//        return;
 
-//    addingEtiqueta_ = true;
-//    QSqlQuery query;
+void MainWindow::onEtiquetasCellChanged(int row) {
+    if (addingEtiqueta_)
+        return;
 
-//    if (ui->tableEtiquetas->item(row, 0)->data(Qt::UserRole).isNull()) {
-//        query = db_.exec("INSERT INTO categorias (name) "
-//                 "VALUES ("+QString("'%1','%2');" )\
-//                 .arg(ui->tableEtiquetas->item(row, 0)->text()));
-//        query = db_.exec("INSERT INTO categorias(name, descripcion) VALUES ('"+ ui->tableEtiquetas->item(row, 0)->text() +"','"+ ui->tableCategorias->item(row, 1)->text() +"');");
+    addingEtiqueta_ = true;
+    QSqlQuery query;
 
-//        ui->tableEtiquetas->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
-//    } else {
-//        query = db_.exec("UPDATE tareas "
-//                 "SET "+QString("name='%1',descripcion='%2'" )\
-//                 .arg(ui->tableEtiquetas->item(row, 0)->text())\
-//                 .arg(ui->tableEtiquetas->item(row, 1)->text()) +
-//                 "WHERE id = " + ui->tableEtiquetas->item(row, 0)->data(Qt::UserRole).toString() + ";");
-//    }
+    if (ui->tableEtiquetas->item(row, 0)->data(Qt::UserRole).isNull()) {
+        query = db_.exec("INSERT INTO etiquetas(name) "
+                 "VALUES ("+QString("'%1');" )\
+                 .arg(ui->tableEtiquetas->item(row, 0)->text()));
+        ui->tableEtiquetas->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
+    } else {
+        query = db_.exec("UPDATE tareas "
+                 "SET "+QString("name='%1'" )\
+                 .arg(ui->tableEtiquetas->item(row, 0)->text()) +
+                 "WHERE id = " + ui->tableEtiquetas->item(row, 0)->data(Qt::UserRole).toString() + ";");
+    }
 
-//    addingEtiqueta_ = false;
-//}
+    addingEtiqueta_ = false;
+}
 
 
 void MainWindow::onLoadEtiquetas() {
@@ -271,4 +277,19 @@ void MainWindow::onLoadEtiquetas() {
         ui->tableEtiquetas->setItem(rowNumber, 0, nombre);
     }
     ui->tableEtiquetas->setSortingEnabled(true);
+}
+
+
+void MainWindow::onDescriptionTask(int row, int col) {
+    QSqlQuery q = db_.exec( "SELECT descripcion "
+                            "FROM tareas "
+                            "WHERE name = '" + ui->tableTareas->item(row, 0)->text() + "';");
+
+    qDebug() << "SELECT descripcion "
+                "FROM tareas "
+                "WHERE name = '" + ui->tableTareas->item(row, 0)->text() + "';";
+
+    q.next();
+    qDebug() << GetField(q, "descripcion").toString();
+    ui->tareaDescription->setText(GetField(q, "descripcion").toString());
 }

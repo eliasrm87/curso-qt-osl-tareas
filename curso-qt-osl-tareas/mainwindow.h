@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QDebug>
+#include <QtDebug>
 #include "dbconnection.h"
 
 namespace Ui {
@@ -28,12 +29,13 @@ private slots:
     void addTarea();
     void addCategoria();
     void addEtiqueta();
-    void onTareasCellChanged(int row, int column);
-    void onCategoriasCellChanged(int row, int column);
-
+    void onTareasCellChanged(int row);
+    void onCategoriasCellChanged(int row);
+    void onEtiquetasCellChanged(int row);
     void onLoadTareas();
     void onLoadCategorias();
     void onLoadEtiquetas();
+    void onDescriptionTask(int row, int col);
 };
 
 #endif // MAINWINDOW_H
