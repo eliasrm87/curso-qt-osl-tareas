@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableTareas->horizontalHeader()->setStretchLastSection(true);
     ui->tableCategorias->horizontalHeader()->setStretchLastSection(true);
     ui->tableEtiquetas->horizontalHeader()->setStretchLastSection(true);
+    ui->tareaEtiquetas->horizontalHeader()->setStretchLastSection(true);
 
     // Conect
     connect(ui->actionNueva,        SIGNAL(triggered()),                this, SLOT(addTarea()));
@@ -59,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tableEtiquetas,     SIGNAL(cellChanged(int,int)),       this, SLOT(onEtiquetasCellChanged(int)));
 
     connect(ui->tableTareas,        SIGNAL(cellClicked(int,int)),       this, SLOT(onDescriptionTask(int, int)));
+    connect(ui->tableTareas,        SIGNAL(cellClicked(int,int)),       this, SLOT(onEtiquetasTask(int, int)));
 
     addingTarea_ = false;
     addingCategoria_ = false;
@@ -66,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     onLoadCategorias();
     onLoadEtiquetas();
+    initTableEtiquetas();
 
 }
 
@@ -292,4 +295,64 @@ void MainWindow::onDescriptionTask(int row, int col) {
     q.next();
     qDebug() << GetField(q, "descripcion").toString();
     ui->tareaDescription->setText(GetField(q, "descripcion").toString());
+}
+
+void MainWindow::onEtiquetasTask(int row, int col) {
+    // Obtengo el id de la tarea seleccionada
+    QSqlQuery qTarea = db_.exec("SELECT id "
+                                "FROM tareas "
+                                "WHERE name = '" + ui->tableTareas->item(row, 0)->text() + "';");
+    qTarea.next();
+    QString idTarea = GetField(qTarea, "id").toString();
+
+    // Obtengo la lista de todos las etiquetas existentes
+    QSqlQuery qEtiquetas = db_.exec("SELECT * "
+                                    "FROM etiquetas;");
+
+    // Obtengo los que están asignados a la tarea en concreto
+    QSqlQuery qAsignados = db_.exec("SELECT * "
+                                    "FROM tareas_etiq "
+                                    "WHERE id = " + GetField(qTarea,"id").toString());
+
+    int i = 0;
+    while (qEtiquetas.next()) {
+        QSqlQuery qIdElegido = db_.exec("SELECT * "
+                                        "FROM etiquetas "
+                                        "WHERE name='" + ui->tareaEtiquetas->item(i, 1)->text() + "';");
+        qIdElegido.next();
+        qDebug() << GetField(qIdElegido, "id").toString();
+        QSqlQuery qAsignados = db_.exec("SELECT * "
+                                        "FROM tareas_etiq "
+                                        "WHERE ((id_tarea = " + GetField(qTarea,"id").toString() +
+                                        ") & (id_etiq= " + GetField(qIdElegido, "id").toString() + "));");
+        qDebug() << "SELECT * "
+                    "FROM tareas_etiq "
+                    "WHERE ((id_tarea = " + GetField(qTarea,"id").toString() +
+                    ") & (id_etiq= " + GetField(qIdElegido, "id").toString() + "));";
+
+        if (qAsignados.size() > 0) {
+            qDebug() << "Tiene resultado";
+        } else {
+            qDebug() << "No tiene resultado " << qAsignados.size() << " " << qAsignados.numRowsAffected();
+        }
+
+        i++;
+    }
+
+
+}
+
+void MainWindow::initTableEtiquetas() {
+    // Obtengo la lista de todos las etiquetas existentes
+    QSqlQuery qEtiquetas = db_.exec("SELECT * "
+                                    "FROM etiquetas;");
+
+    while (qEtiquetas.next()) {
+        //ui->comboEtiquetas->addItem(GetField(qEtiquetas,"name").toString(), GetField(qEtiquetas,"id").toInt());
+        int rowNumber = ui->tareaEtiquetas->rowCount();
+        ui->tareaEtiquetas->insertRow(rowNumber);
+        QTableWidgetItem* nombre = new QTableWidgetItem(GetField(qEtiquetas, "name").toString());
+        ui->tareaEtiquetas->setItem(rowNumber, 1, nombre);
+    }
+
 }

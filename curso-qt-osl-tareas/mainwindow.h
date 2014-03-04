@@ -36,6 +36,8 @@ private slots:
     void onLoadCategorias();
     void onLoadEtiquetas();
     void onDescriptionTask(int row, int col);
+    void onEtiquetasTask(int row, int col);
+    void initTableEtiquetas();
 };
 
 #endif // MAINWINDOW_H
