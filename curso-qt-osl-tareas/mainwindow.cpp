@@ -3,6 +3,311 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    inicializaBD();
+
+    catModif_ = false;
+
+
+    wgtMain_ = new QWidget(this);
+    lytMain_ = new QGridLayout(wgtMain_);
+    wgtMain_->setLayout(lytMain_);
+    setCentralWidget(wgtMain_);
+
+    this->setGeometry(30, 30, 800, 600);
+    this->setWindowTitle(tr("Gestor de Tareas"));
+
+
+
+    txtEditor_ = new QTextEdit(this);
+    tareas_ = new QTableWidget(0,5,this);
+    categorias_ = new QTableWidget(0,2,this);
+    etiquetas_ = new QTableWidget(0,2,this);
+
+
+    tareas_->setAutoScroll(true);
+
+    categorias_->setAutoScroll(true);
+    categorias_->verticalHeader()->hide();
+    categorias_->horizontalHeader()->hide();
+
+    etiquetas_->setAutoScroll(true);
+    etiquetas_->verticalHeader()->hide();
+    etiquetas_->horizontalHeader()->hide();
+
+
+    QLabel* labEtiquetas = new QLabel("Etiquetas");
+    QLabel* labCategorias = new QLabel("Categorías");
+
+    lytMain_->addWidget(labCategorias,0,1,1,1);
+    lytMain_->addWidget(categorias_,1,1,1,1);
+    lytMain_->addWidget(labEtiquetas,0,0,1,1);
+    lytMain_->addWidget(etiquetas_,1,0,1,1);
+    lytMain_->addWidget(tareas_,2,0,1,2);
+    lytMain_->addWidget(txtEditor_,0,2,3,2);
+
+
+    mostrarTareas();
+    mostrarCategorias();
+    mostrarEtiquetas();
+
+}
+
+MainWindow::~MainWindow()
+{
+
+}
+
+
+
+/*void MainWindow::verDescripcionCat (int row, int col) {
+
+}*/
+
+void MainWindow::verDescripcion (int row, int col) {
+    QSqlQuery q_tar_desc = db_.exec("SELECT descripcion FROM tareas;");
+    QString descripcion ;
+    if (q_tar_desc.last()  > row) {
+        q_tar_desc.seek(row);
+        descripcion = q_tar_desc.value("descripcion").toString();
+    }
+    else {
+        descripcion = "";
+    }
+    txtEditor_->setText(descripcion);
+}
+
+
+void MainWindow::guardarContenido(int row, int col) {
+    QSqlQuery q_tar_count = db_.exec("SELECT count(*) FROM tareas;");
+    QString texto = tareas_->item(row, col)->text();
+    if (q_tar_count.last()  > row) {
+
+        qDebug("Guardar contenido");
+        //qDebug ("%d - %d", row, col);
+        switch (col) {
+        case 0:
+            db_.exec("UPDATE tareas SET name =\""+ texto + "\" WHERE id = 0 ;");
+            break;
+        case 1:
+            db_.exec("UPDATE tareas SET date =\""+ texto + "\" WHERE id = 0 ;");
+            break;
+        case 2:
+            db_.exec("UPDATE tareas SET done =\""+ texto + "\" WHERE id = 0 ;");
+            break;
+        default:
+            break;
+        }
+
+    }
+    else {
+    /*    qDebug ("ELSE %d - %d", row, col);
+        switch (col) {
+        case 0:
+            db_.exec("INSERT INTO tareas (name) VALUES (\" "+ texto + "\");");
+            break;
+        case 1:
+            db_.exec("INSERT INTO tareas (date) VALUES (\" "+ texto + "\");");
+            break;
+        case 2:
+            db_.exec("INSERT INTO tareas (done) VALUES (\" "+ texto + "\");");
+            break;
+        default:
+            break;
+        }
+        tareas_->setRowCount(tareas_->rowCount() + 1); */
+    }
+}
+
+void MainWindow::mostrarCategorias () {
+    q_cat.first();
+    QStringList cabeceraCategorias;
+    cabeceraCategorias << "Categoria";
+    categorias_->setHorizontalHeaderLabels(cabeceraCategorias);
+    categorias_->setShowGrid(false);
+
+    QSignalMapper* mapper = new QSignalMapper(this);
+
+
+
+    int row = 0;
+    bool impar = false;
+    QRadioButton *radio = new QRadioButton("TODAS", this);
+    categorias_->insertRow(row);
+    radio->setChecked(true);
+    categorias_->setCellWidget(row,0,radio);
+
+    connect(radio, SIGNAL(toggled(bool)), mapper, SLOT(map()));
+    mapper->setMapping(radio, "TODAS");
+
+    do {
+        QString categoria = q_cat.value(1).toString();
+        radio = new QRadioButton(categoria, this);
+        if (impar) {
+            categorias_->insertRow(row);
+            categorias_->setCellWidget(row,0,radio);
+        }
+        else {
+            categorias_->setCellWidget(row,1,radio);
+            row++;
+        }
+        impar = !impar;
+
+        connect(radio, SIGNAL(toggled(bool)), mapper, SLOT(map()));
+        mapper->setMapping(radio, categoria);
+
+    } while (q_cat.next());
+    categorias_->insertRow(row);
+
+    connect(mapper,SIGNAL(mapped(QString)),this,SLOT(cambiaCategoria(QString)));
+
+}
+
+
+void MainWindow::cambiaCategoria (QString cat) {
+
+    if (catModif_) {
+        if (cat != "TODAS") {
+            q_tar.clear();
+            q_tar.prepare("SELECT t.id, t.name, t.descripcion, t.date, t.done, t.id_categ  FROM categorias c, tareas t WHERE  c.name=:cat AND  c.id = t.id_categ;");
+            q_tar.bindValue(":cat", cat);
+            q_tar.exec();
+            q_tar.first();
+
+            QSqlQuery q_cat_desc = db_.exec("SELECT descripcion FROM categorias WHERE name=\""+cat+"\";");
+            QString descripcion = "prueba";
+            q_cat_desc.first();
+            descripcion = q_cat_desc.value("descripcion").toString();
+
+            qDebug() << "Descripcion:" << descripcion;
+            txtEditor_->setText(descripcion);
+
+            q_cat_desc.clear();
+
+
+
+        }
+
+        else{
+            q_tar.clear();
+            q_tar = db_.exec("SELECT * FROM tareas;");
+            txtEditor_->setText("");
+        }
+        qDebug() << "Categoria: " << cat;
+        mostrarTareas();
+    }
+    catModif_ = !catModif_;
+
+}
+
+
+void MainWindow::mostrarEtiquetas (){
+    QStringList cabeceraEtiquetas;
+    cabeceraEtiquetas << "Etiqueta";
+    etiquetas_->setHorizontalHeaderLabels(cabeceraEtiquetas);
+    etiquetas_->setShowGrid(false);
+
+    bool impar = true;
+    int row = 0;
+    while (q_etiq.next()) {
+        QString etiqueta = q_etiq.value(1).toString();
+        QCheckBox *checkbox_ = new QCheckBox(etiqueta);
+        checkbox_->setChecked(true);
+
+        if (impar) {
+            etiquetas_->insertRow(row);
+            etiquetas_->setCellWidget(row,0,checkbox_);
+        }
+        else {
+            etiquetas_->setCellWidget(row,1,checkbox_);
+            row++;
+        }
+        impar = !impar;
+
+    }
+    etiquetas_->insertRow(row);
+}
+
+
+void MainWindow::mostrarTareas () {
+    QStringList cabeceraTareas;
+    tareas_->setRowCount(0);
+    tareas_->clear();
+    cabeceraTareas << "Nombre" << "Fecha" << "Estado" << "Categoría" << "Etiquetas";
+    tareas_->setHorizontalHeaderLabels(cabeceraTareas);
+    tareas_->setShowGrid(false);
+    int row = 0;
+    q_tar.first();
+    do  {
+        QString nombre = q_tar.value(1).toString();
+        QString descripcion = q_tar.value(2).toString();
+        QString fecha = q_tar.value(3).toString();
+
+        QString estado = q_tar.value(4).toString();
+
+        QString id_cat = q_tar.value(5).toString();
+
+        QString id_tarea = q_tar.value(0).toString();
+
+        QCheckBox *checkbox_ = new QCheckBox();
+        if (estado == "0") {
+            checkbox_->setChecked(false);
+         }
+        else {
+            checkbox_->setChecked(true);
+        }
+
+        //int row = tareas_->rowCount();
+        tareas_->insertRow(row);
+        tareas_->setItem(row, 0, new QTableWidgetItem (nombre));
+        //tareas_->setItem(row, 1, new QTableWidgetItem (descripcion));
+        //txtEditor_->setText(descripcion);
+        tareas_->setItem(row, 1, new QTableWidgetItem (fecha));
+
+        tareas_->setCellWidget(row,2,checkbox_);
+
+        QSqlQuery q_cat_tar = db_.exec("SELECT name FROM categorias WHERE id = "+id_cat+";");
+
+        QComboBox *combo = new QComboBox(this);
+        q_cat.first();
+        QStringList listaCat;
+
+
+        do {
+            if (q_cat.isValid()) {
+                listaCat << q_cat.value(1).toString();
+            }
+        } while (q_cat.next());
+
+        combo->addItems(listaCat);
+
+        q_cat_tar.first();
+        QString categorias_tarea = q_cat_tar.value(0).toString();
+
+        combo->setCurrentText(categorias_tarea);
+        tareas_->setCellWidget(row,3,combo);
+
+        QSqlQuery q_tar_etiq = db_.exec("SELECT e.name FROM  tareas t, etiquetas e, tareas_etiq x WHERE t.id = x.id_tarea AND e.id = x.id_etiq AND t.id = "+id_tarea+";");
+
+
+        QString etiqueta_tarea = "";
+        do {
+            if (q_tar_etiq.value(0).toString() != "") {
+                etiqueta_tarea += "," + q_tar_etiq.value(0).toString();
+            }
+        } while (q_tar_etiq.next());
+        tareas_->setItem(row, 4, new QTableWidgetItem (etiqueta_tarea));
+        row++;
+
+    } while (q_tar.next());
+
+    connect(tareas_, SIGNAL(cellClicked(int,int)), this, SLOT(verDescripcion(int, int)));
+    connect(tareas_, SIGNAL(cellChanged(int,int)), this, SLOT(guardarContenido(int, int)));
+
+    tareas_->insertRow(row);
+}
+
+
+void MainWindow::inicializaBD () {
     //Setup database
     ConecToDb(db_, "tareas");
 
@@ -32,170 +337,7 @@ MainWindow::MainWindow(QWidget *parent)
               ");");
 
 
-    QSqlQuery q_cat = db_.exec("SELECT * FROM categorias;");
-    QSqlQuery q_tar = db_.exec("SELECT * FROM tareas;");
-    QSqlQuery q_etiq = db_.exec("SELECT * FROM etiquetas;");
-
-    QWidget* wgtMain_ = new QWidget(this);
-    QGridLayout* lytMain_ = new QGridLayout(wgtMain_);
-    wgtMain_->setLayout(lytMain_);
-    setCentralWidget(wgtMain_);
-
-    this->setGeometry(30, 30, 800, 600);
-    this->setWindowTitle(tr("Gestor de Tareas"));
-
-
-
-    txtEditor_ = new QTextEdit(this);
-    tareas_ = new QTableWidget(0,3,this);
-    categorias_ = new QTableWidget(0,1,this);
-    etiquetas_ = new QTableWidget(0,1,this);
-
-
-    tareas_->setAutoScroll(true);
-    categorias_->setAutoScroll(true);
-
-    lytMain_->addWidget(categorias_,0,1,1,1);
-    lytMain_->addWidget(etiquetas_,0,0,1,1);
-    lytMain_->addWidget(tareas_,1,0,1,2);
-    lytMain_->addWidget(txtEditor_,0,2,2,2);
-
-    QStringList listaTareas;
-    listaTareas << "Hola" << "a sdad " << "cas sads ad";
-   // tareas_->addItems(listaTareas);
-
-
-    QStringList cabeceraTareas;
-    cabeceraTareas << "Nombre" << "Fecha" << "Estado";
-    tareas_->setHorizontalHeaderLabels(cabeceraTareas);
-    tareas_->setShowGrid(false);
-    int row = 0;
-    while (q_tar.next()) {
-        QString nombre = q_tar.value(1).toString();
-        QString descripcion = q_tar.value(2).toString();
-        QString fecha = q_tar.value(3).toString();
-
-        QString estado = q_tar.value(4).toString();
-
-        QCheckBox *checkbox_ = new QCheckBox();
-        if (estado == "0") {
-            checkbox_->setChecked(false);
-         }
-        else {
-            checkbox_->setChecked(true);
-        }
-
-        //int row = tareas_->rowCount();
-        tareas_->insertRow(row);
-        tareas_->setItem(row, 0, new QTableWidgetItem (nombre));
-        //tareas_->setItem(row, 1, new QTableWidgetItem (descripcion));
-        //txtEditor_->setText(descripcion);
-        tareas_->setItem(row, 1, new QTableWidgetItem (fecha));
-
-        tareas_->setCellWidget(row,2,checkbox_);
-        row++;
-
-        connect(tareas_, SIGNAL(cellClicked(int,int)), this, SLOT(verDescripcion(int, int)));
-        connect(tareas_, SIGNAL(cellChanged(int,int)), this, SLOT(guardarContenido(int, int)));
-
-    }
-    tareas_->insertRow(row);
-
-    QStringList cabeceraCategorias;
-    cabeceraCategorias << "Categoria";
-    categorias_->setHorizontalHeaderLabels(cabeceraCategorias);
-    categorias_->setShowGrid(false);
-    row = 0;
-    while (q_cat.next()) {
-        QString categoria = q_cat.value(1).toString();
-        //int row = tareas_->rowCount();
-        categorias_->insertRow(row);
-        categorias_->setItem(row, 0, new QTableWidgetItem (categoria));
-        row++;
-    }
-    categorias_->insertRow(row);
-
-    QStringList cabeceraEtiquetas;
-    cabeceraEtiquetas << "Etiqueta";
-    etiquetas_->setHorizontalHeaderLabels(cabeceraEtiquetas);
-    etiquetas_->setShowGrid(false);
-    row = 0;
-    while (q_etiq.next()) {
-        QString etiqueta = q_etiq.value(1).toString();
-        QCheckBox *checkbox_ = new QCheckBox(etiqueta);
-        checkbox_->setChecked(true);
-
-
-        //int row = tareas_->rowCount();
-        etiquetas_->insertRow(row);
-      //  etiquetas_->setItem(row, 0, new QTableWidgetItem (etiqueta));
-        etiquetas_->setCellWidget(row,0,checkbox_);
-
-        row++;
-    }
-    etiquetas_->insertRow(row);
-
-}
-
-MainWindow::~MainWindow()
-{
-
-}
-
-
-
-void MainWindow::verDescripcion (int row, int col) {
-    QSqlQuery q_tar_desc = db_.exec("SELECT count(*), descripcion FROM tareas;");
-    QString descripcion ;
-    if (q_tar_desc.last()  > row) {
-        q_tar_desc.seek(row);
-        descripcion = q_tar_desc.value(1).toString();
-    }
-    else {
-        descripcion = "";
-    }
-    txtEditor_->setText(descripcion);
-}
-
-
-void MainWindow::guardarContenido(int row, int col) {
-    QSqlQuery q_tar_count = db_.exec("SELECT count(*) FROM tareas;");
-    QString texto = tareas_->item(row, col)->text();
-    if (q_tar_count.last()  > row) {
-
-        qDebug ("%d - %d", row, col);
-        switch (col) {
-        case 0:
-            db_.exec("UPDATE tareas SET name =\" "+ texto + "\" WHERE id = 0 ;");
-            qDebug()<<"Aqui falla "<<db_.lastError();
-            break;
-        case 1:
-            db_.exec("UPDATE tareas SET date =\" "+ texto + "\" WHERE id = 0 ;");
-            break;
-        case 2:
-            db_.exec("UPDATE tareas SET done =\" "+ texto + "\" WHERE id = 0 ;");
-            break;
-        default:
-            break;
-        }
-
-    }
-    else {
-        qDebug ("ELSE %d - %d", row, col);
-      /*  switch (col) {
-        case 0:
-            db_.exec("INSERT INTO tareas (name) VALUES (\" "+ texto + "\");");
-            qDebug()<<"Aqui falla "<<db_.lastError();
-            break;
-        case 1:
-            db_.exec("INSERT INTO tareas (date) VALUES (\" "+ texto + "\");");
-            break;
-        case 2:
-            db_.exec("INSERT INTO tareas (done) VALUES (\" "+ texto + "\");");
-            break;
-        default:
-            break;
-        }*/
-        tareas_->setRowCount(tareas_->rowCount() + 1);
-    }
+    q_cat = db_.exec("SELECT * FROM categorias;");
+    q_tar = db_.exec("SELECT * FROM tareas;");
+    q_etiq = db_.exec("SELECT * FROM etiquetas;");
 }
