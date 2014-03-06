@@ -38,8 +38,12 @@ MainWindow::MainWindow(QWidget *parent) :
               ");");
 
 
+    addingTarea_ = false;
+    addingCategoria_ = false;
 
     connect(ui->actionNuevaTarea, SIGNAL(triggered()), this, SLOT(onAddTarea()));
+    connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCateg()));
+    connect(ui->tblCateg, SIGNAL(cellChanged(int,int)), this, SLOT(onSaveCateg(int, int)));
     connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
     connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
 
@@ -49,8 +53,28 @@ MainWindow::MainWindow(QWidget *parent) :
     // Cuando haces click en una celda de una tarea, muestra su descripcion
     connect(ui->tblTareas, SIGNAL(cellClicked(int,int)), this, SLOT(showDescriptionTarea(int,int)));
 
-    addingTarea_ = false;
 
+
+
+    loadCategorias(); // Carga las categorias guardadas en la base de datos
+    loadTareas(); // Carga las tareas guardadas en la base de datos
+
+
+    //Activamos el sorting en las tablas
+    ui->tblTareas->setSortingEnabled(true);
+    ui->tblCateg->setSortingEnabled(true);
+    ui->tblEtiq->setSortingEnabled(true);
+    ui->comboCategoria->setCurrentIndex(0);
+
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::loadCategorias()
+{
     //Obtenemos las categorias
     QSqlQuery q = db_.exec("SELECT * "
                            "FROM categorias;");
@@ -65,20 +89,6 @@ MainWindow::MainWindow(QWidget *parent) :
         QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
         ui->tblCateg->setItem(rowNumber, 0, item);
     }
-
-    loadTareas(); // Carga las tareas guardadas en la base de datas
-
-
-    //Activamos el sorting en las tablas
-    ui->tblTareas->setSortingEnabled(true);
-    ui->tblCateg->setSortingEnabled(true);
-    ui->comboCategoria->setCurrentIndex(0);
-
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::loadTareas()
@@ -111,9 +121,6 @@ void MainWindow::loadTareas()
         QTableWidgetItem *fecha = new QTableWidgetItem(GetField(q, "date").toString());
         ui->tblTareas->setItem(rowNumber, 1, fecha);
 
-        //qDebug() << "Nombre tarea: " << GetField(q, "name").toString() << " Fecha tarea: " << GetField(q, "date").toString();
-        //qDebug() << "Row cont: " << ui->tblTareas->rowCount();
-
         contFilas = contFilas + 1;
 
     }
@@ -137,6 +144,39 @@ void MainWindow::onAddTarea()
 
 
     addingTarea_ = false;
+}
+
+// Añade una nueva fila a las categorias
+void MainWindow::onAddCateg()
+{
+
+    ui->tblCateg->insertRow(ui->tblCateg->rowCount());// Inserta una fila
+    ui->tblCateg->setItem(ui->tblCateg->rowCount()-1, 0, new QTableWidgetItem(""));
+
+}
+
+// Guarda los cambios en las categorias
+void MainWindow::onSaveCateg(int fila, int col)
+{
+
+    if (addingCategoria_)
+        return;
+
+    addingCategoria_ = true;
+
+
+    if (ui->tblCateg->item(fila, col)->data(Qt::UserRole).isNull()) {
+        QSqlQuery q = db_.exec("INSERT INTO categorias (name) VALUES ("+QString("'%1');" )\
+                     .arg(ui->tblCateg->item(fila, col)->text()));
+    }else{
+        QSqlQuery q = db_.exec("UPDATE categorias SET ("+QString("'%1');" )\
+                     .arg(ui->tblCateg->item(fila, col)->text())+
+                      "WHERE name ="+ui->tblTareas->item(fila, 0)->data(Qt::UserRole).toString());
+
+    }
+
+     addingCategoria_ = false;
+
 }
 
 void MainWindow::onTareasCellChanged(int row, int column)
@@ -234,6 +274,6 @@ void MainWindow::showDescriptionTarea(int fila, int col)
                            "FROM tareas");
     q.seek(fila);
     QString cadena = (GetField(q, "descripcion").toString());
-    ui->txtCategDescr->setText(cadena);
+    ui->txtTareaDescr->setText(cadena);
 
 }

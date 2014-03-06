@@ -16,11 +16,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void loadCategorias();
     void loadTareas();
 
 private slots:
 
     void onAddTarea();
+
+    void onAddCateg(); // Añade una fila para rellenar una nueva categoria
+    void onSaveCateg(int fila, int col); // Guarda en la base de datos los cambios realizados en las categorias
+
     void onTareasCellChanged(int row, int column);
     void onLoadTareas();
     void showDescriptionCat(int fila, int col); // Muestra descripción de las categorías
