@@ -21,14 +21,20 @@ public:
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db_;
-    bool  addingTarea_;
+    bool addingTarea_;
     bool addingCategoria_;
+    bool addingEtiqueta_;
+    void loadCategoria();
+    void loadTareas();
+    void loadEtiqueta();
 
 private slots:
-    void onAddTarea();
     void onAddCategoria();
-    void onGuardaTarea();
+    void onAddEtiqueta();
+    void onAddTarea();
     void onGuardaCategoria(int row,int col);
+    void onGuardaEtiqueta(int row,int col);
+    void onGuardaTarea();
 
 
 };

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.2.0
+** Created by: Qt User Interface Compiler version 5.2.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -67,7 +67,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(385, 314);
+        MainWindow->resize(385, 317);
         actionNuevaTarea = new QAction(MainWindow);
         actionNuevaTarea->setObjectName(QStringLiteral("actionNuevaTarea"));
         actionNuevaCategoria = new QAction(MainWindow);
