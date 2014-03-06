@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent)
     inicializaBD();
 
     catModif_ = false;
+    editar_ = true;
+    desc_tarea_ = false;
 
 
     wgtMain_ = new QWidget(this);
@@ -23,6 +25,10 @@ MainWindow::MainWindow(QWidget *parent)
     categorias_ = new QTableWidget(0,2,this);
     etiquetas_ = new QTableWidget(0,2,this);
 
+    QTextDocument * textDocument = txtEditor_->document();
+    textDocument->setModified(false);
+
+    connect(txtEditor_, SIGNAL(textChanged()), this, SLOT(guardarDescripcion()));
 
     tareas_->setAutoScroll(true);
 
@@ -37,13 +43,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     QLabel* labEtiquetas = new QLabel("Etiquetas");
     QLabel* labCategorias = new QLabel("Categorías");
+    QLabel* labDescripcion = new QLabel("Descripción");
 
     lytMain_->addWidget(labCategorias,0,1,1,1);
     lytMain_->addWidget(categorias_,1,1,1,1);
     lytMain_->addWidget(labEtiquetas,0,0,1,1);
     lytMain_->addWidget(etiquetas_,1,0,1,1);
     lytMain_->addWidget(tareas_,2,0,1,2);
-    lytMain_->addWidget(txtEditor_,0,2,3,2);
+    lytMain_->addWidget(labDescripcion,0,2,1,1);
+    lytMain_->addWidget(txtEditor_,1,2,3,2);
 
 
     mostrarTareas();
@@ -64,9 +72,15 @@ MainWindow::~MainWindow()
 }*/
 
 void MainWindow::verDescripcion (int row, int col) {
+
+    row_act_ = row;
+    col_act_ = 0;
     QSqlQuery q_tar_desc = db_.exec("SELECT descripcion FROM tareas;");
+    QSqlQuery q_tar_count = db_.exec("SELECT count(*) FROM tareas;");
     QString descripcion ;
-    if (q_tar_desc.last()  > row) {
+
+    q_tar_count.first();
+    if (q_tar_count.value(0)  > row) {
         q_tar_desc.seek(row);
         descripcion = q_tar_desc.value("descripcion").toString();
     }
@@ -74,25 +88,41 @@ void MainWindow::verDescripcion (int row, int col) {
         descripcion = "";
     }
     txtEditor_->setText(descripcion);
+    desc_tarea_ = true;
+
 }
 
 
 void MainWindow::guardarContenido(int row, int col) {
-    QSqlQuery q_tar_count = db_.exec("SELECT count(*) FROM tareas;");
-    QString texto = tareas_->item(row, col)->text();
-    if (q_tar_count.last()  > row) {
 
-        qDebug("Guardar contenido");
-        //qDebug ("%d - %d", row, col);
+    if (!editar_)  {
+        return;
+    }
+
+    row_act_ = row;
+    col_act_ = col;
+
+    QSqlQuery q_tar_count = db_.exec("SELECT count(*) FROM tareas;");
+
+    QString texto = tareas_->item(row, col)->text();
+
+    q_tar_count.first();
+    if (q_tar_count.value(0)  > row) {
+
+        QSqlQuery q_tar_id = db_.exec("SELECT id FROM tareas;");
+        q_tar_id.seek(row);
+        QString id_tar = q_tar_id.value("id").toString();
+
+
         switch (col) {
         case 0:
-            db_.exec("UPDATE tareas SET name =\""+ texto + "\" WHERE id = 0 ;");
+            db_.exec("UPDATE tareas SET name =\""+ texto + "\" WHERE id = \""+ id_tar + "\" ;");
             break;
         case 1:
-            db_.exec("UPDATE tareas SET date =\""+ texto + "\" WHERE id = 0 ;");
+            db_.exec("UPDATE tareas SET date =\""+ texto + "\" WHERE id = \""+ id_tar + "\" ;");
             break;
         case 2:
-            db_.exec("UPDATE tareas SET done =\""+ texto + "\" WHERE id = 0 ;");
+            db_.exec("UPDATE tareas SET done =\""+ texto + "\" WHERE id = \""+ id_tar + "\" ;");
             break;
         default:
             break;
@@ -100,21 +130,22 @@ void MainWindow::guardarContenido(int row, int col) {
 
     }
     else {
-    /*    qDebug ("ELSE %d - %d", row, col);
+
         switch (col) {
         case 0:
-            db_.exec("INSERT INTO tareas (name) VALUES (\" "+ texto + "\");");
+            db_.exec("INSERT INTO tareas (name, date, done, descripcion, id_categ) VALUES (\" "+ texto + "\", \"\", \"0\", \"\", \"-1\");");
             break;
         case 1:
-            db_.exec("INSERT INTO tareas (date) VALUES (\" "+ texto + "\");");
+            db_.exec("INSERT INTO tareas (name, date, done, descripcion, id_categ) VALUES (\"\", \" "+ texto + "\", \"0\", \"\", \"-1\);");
             break;
         case 2:
-            db_.exec("INSERT INTO tareas (done) VALUES (\" "+ texto + "\");");
+            db_.exec("INSERT INTO tareas (name, date, done, descripcion, id_categ) VALUES (\"\", \"\", \" "+ texto + "\", \"\", \"-1\);");
             break;
         default:
             break;
         }
-        tareas_->setRowCount(tareas_->rowCount() + 1); */
+
+        tareas_->setRowCount(tareas_->rowCount() + 1);
     }
 }
 
@@ -164,6 +195,7 @@ void MainWindow::mostrarCategorias () {
 
 
 void MainWindow::cambiaCategoria (QString cat) {
+    editar_ = false;
 
     if (catModif_) {
         if (cat != "TODAS") {
@@ -173,13 +205,15 @@ void MainWindow::cambiaCategoria (QString cat) {
             q_tar.exec();
             q_tar.first();
 
-            QSqlQuery q_cat_desc = db_.exec("SELECT descripcion FROM categorias WHERE name=\""+cat+"\";");
+            QSqlQuery q_cat_desc = db_.exec("SELECT id, descripcion FROM categorias WHERE name=\""+cat+"\";");
             QString descripcion = "prueba";
             q_cat_desc.first();
             descripcion = q_cat_desc.value("descripcion").toString();
 
-            qDebug() << "Descripcion:" << descripcion;
+            id_cat_act_ = q_cat_desc.value("id").toInt();
+
             txtEditor_->setText(descripcion);
+            desc_tarea_ = false;
 
             q_cat_desc.clear();
 
@@ -191,12 +225,12 @@ void MainWindow::cambiaCategoria (QString cat) {
             q_tar.clear();
             q_tar = db_.exec("SELECT * FROM tareas;");
             txtEditor_->setText("");
+            id_cat_act_ = -1;
         }
-        qDebug() << "Categoria: " << cat;
         mostrarTareas();
     }
     catModif_ = !catModif_;
-
+    editar_ = true;
 }
 
 
@@ -256,14 +290,13 @@ void MainWindow::mostrarTareas () {
             checkbox_->setChecked(true);
         }
 
-        //int row = tareas_->rowCount();
         tareas_->insertRow(row);
         tareas_->setItem(row, 0, new QTableWidgetItem (nombre));
-        //tareas_->setItem(row, 1, new QTableWidgetItem (descripcion));
-        //txtEditor_->setText(descripcion);
+
         tareas_->setItem(row, 1, new QTableWidgetItem (fecha));
 
         tareas_->setCellWidget(row,2,checkbox_);
+
 
         QSqlQuery q_cat_tar = db_.exec("SELECT name FROM categorias WHERE id = "+id_cat+";");
 
@@ -271,7 +304,9 @@ void MainWindow::mostrarTareas () {
         q_cat.first();
         QStringList listaCat;
 
-
+        if (id_cat == "-1") {
+            listaCat << "Sin categoria";
+        }
         do {
             if (q_cat.isValid()) {
                 listaCat << q_cat.value(1).toString();
@@ -281,7 +316,13 @@ void MainWindow::mostrarTareas () {
         combo->addItems(listaCat);
 
         q_cat_tar.first();
-        QString categorias_tarea = q_cat_tar.value(0).toString();
+        QString categorias_tarea;
+        if (id_cat == "-1") {
+            categorias_tarea = "Sin categoria";
+        }
+        else {
+            categorias_tarea = q_cat_tar.value(0).toString();
+        }
 
         combo->setCurrentText(categorias_tarea);
         tareas_->setCellWidget(row,3,combo);
@@ -301,9 +342,40 @@ void MainWindow::mostrarTareas () {
     } while (q_tar.next());
 
     connect(tareas_, SIGNAL(cellClicked(int,int)), this, SLOT(verDescripcion(int, int)));
-    connect(tareas_, SIGNAL(cellChanged(int,int)), this, SLOT(guardarContenido(int, int)));
 
+    if (editar_) {
+        connect(tareas_, SIGNAL(cellChanged(int,int)), this, SLOT(guardarContenido(int, int)));
+    }
     tareas_->insertRow(row);
+
+}
+
+
+void MainWindow::guardarDescripcion () {
+
+    if (!editar_) {
+        return;
+    }
+
+
+
+    if (desc_tarea_) {
+        QSqlQuery q_tar_id = db_.exec("SELECT id FROM tareas;");
+        q_tar_id.seek(row_act_);
+        QString id_tar = q_tar_id.value("id").toString();
+        QString texto = txtEditor_->toPlainText();
+        db_.exec("UPDATE tareas SET descripcion =\""+ texto + "\" WHERE id = \""+ id_tar + "\" ;");
+    }
+    else {
+        if (id_cat_act_ != -1) {
+            QSqlQuery q_cat_id = db_.exec("SELECT id FROM categorias;");
+            q_cat_id.seek(id_cat_act_);
+            QString id_cat = q_cat_id.value("id").toString();
+            QString texto = txtEditor_->toPlainText();
+            db_.exec("UPDATE categorias SET descripcion =\""+ texto + "\" WHERE id = \""+ id_cat + "\" ;");
+        }
+
+    }
 }
 
 

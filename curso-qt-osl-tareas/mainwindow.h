@@ -19,6 +19,7 @@
 #include <QRadioButton>
 #include <QComboBox>
 #include <QSignalMapper>
+#include <QAction>
 
 
 class MainWindow : public QMainWindow
@@ -45,16 +46,23 @@ private:
     QGridLayout* lytMain_;
 
     bool catModif_;
+    bool editar_;
+    bool desc_tarea_;
+
+    int row_act_;
+    int col_act_;
+
+    int id_cat_act_;
 
 private slots:
     void verDescripcion(int row, int col);
-    //void verDescripcionCat (int row, int col);
     void guardarContenido(int row, int col);
     void cambiaCategoria (QString cat);
     void mostrarCategorias();
     void mostrarEtiquetas();
     void mostrarTareas();
     void inicializaBD();
+    void guardarDescripcion();
 };
 
 #endif // MAINWINDOW_H
