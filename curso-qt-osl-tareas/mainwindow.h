@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtDebug>
 #include "dbconnection.h"
 #include <QRect>
 #include <QDesktopWidget>
@@ -45,9 +44,9 @@ private slots:
     void Documentacion();
     void abrirURL();
     void AcercaDe();
-    void addTarea();
-    void addCategoria();
-    void addEtiqueta();
+    void onAddTarea();
+    void onAddCategoria();
+    void onAddEtiqueta();
     void onTareasCellChanged(int row);
     void onCategoriasCellChanged(int row);
     void onEtiquetasCellChanged(int row);

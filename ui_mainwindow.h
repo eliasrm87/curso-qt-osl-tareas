@@ -35,6 +35,7 @@ public:
     QAction *actionNueva;
     QAction *categoriaNueva;
     QAction *etiquetaNueva;
+    QAction *actionCerrar;
     QWidget *centralwidget;
     QGridLayout *gridLayout_2;
     QGridLayout *gridLayout;
@@ -47,7 +48,7 @@ public:
     QGroupBox *groupBox_2;
     QGridLayout *gridLayout_6;
     QComboBox *comboCategorias;
-    QTableWidget *tableTareas;
+    QTableWidget *tblTareas;
     QTextEdit *tareaDescription;
     QTableWidget *tareaEtiquetas;
     QWidget *categorias;
@@ -58,7 +59,6 @@ public:
     QTableWidget *tableEtiquetas;
     QMenuBar *menubar;
     QMenu *menuArchivo;
-    QMenu *menuTarea;
     QMenu *menuCategorias;
     QMenu *menuEtiquetas;
     QStatusBar *statusbar;
@@ -77,6 +77,8 @@ public:
         categoriaNueva->setObjectName(QStringLiteral("categoriaNueva"));
         etiquetaNueva = new QAction(MainWindow);
         etiquetaNueva->setObjectName(QStringLiteral("etiquetaNueva"));
+        actionCerrar = new QAction(MainWindow);
+        actionCerrar->setObjectName(QStringLiteral("actionCerrar"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         gridLayout_2 = new QGridLayout(centralwidget);
@@ -113,22 +115,22 @@ public:
 
         gridLayout_4->addWidget(groupBox_2, 0, 0, 1, 1);
 
-        tableTareas = new QTableWidget(tareas);
-        if (tableTareas->columnCount() < 5)
-            tableTareas->setColumnCount(5);
+        tblTareas = new QTableWidget(tareas);
+        if (tblTareas->columnCount() < 5)
+            tblTareas->setColumnCount(5);
         QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
-        tableTareas->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        tblTareas->setHorizontalHeaderItem(0, __qtablewidgetitem);
         QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
-        tableTareas->setHorizontalHeaderItem(1, __qtablewidgetitem1);
+        tblTareas->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
-        tableTareas->setHorizontalHeaderItem(2, __qtablewidgetitem2);
+        tblTareas->setHorizontalHeaderItem(2, __qtablewidgetitem2);
         QTableWidgetItem *__qtablewidgetitem3 = new QTableWidgetItem();
-        tableTareas->setHorizontalHeaderItem(3, __qtablewidgetitem3);
+        tblTareas->setHorizontalHeaderItem(3, __qtablewidgetitem3);
         QTableWidgetItem *__qtablewidgetitem4 = new QTableWidgetItem();
-        tableTareas->setHorizontalHeaderItem(4, __qtablewidgetitem4);
-        tableTareas->setObjectName(QStringLiteral("tableTareas"));
+        tblTareas->setHorizontalHeaderItem(4, __qtablewidgetitem4);
+        tblTareas->setObjectName(QStringLiteral("tblTareas"));
 
-        gridLayout_4->addWidget(tableTareas, 3, 0, 1, 2);
+        gridLayout_4->addWidget(tblTareas, 3, 0, 1, 2);
 
         tareaDescription = new QTextEdit(tareas);
         tareaDescription->setObjectName(QStringLiteral("tareaDescription"));
@@ -194,8 +196,6 @@ public:
         menubar->setGeometry(QRect(0, 0, 635, 20));
         menuArchivo = new QMenu(menubar);
         menuArchivo->setObjectName(QStringLiteral("menuArchivo"));
-        menuTarea = new QMenu(menubar);
-        menuTarea->setObjectName(QStringLiteral("menuTarea"));
         menuCategorias = new QMenu(menubar);
         menuCategorias->setObjectName(QStringLiteral("menuCategorias"));
         menuEtiquetas = new QMenu(menubar);
@@ -206,16 +206,14 @@ public:
         MainWindow->setStatusBar(statusbar);
 
         menubar->addAction(menuArchivo->menuAction());
-        menubar->addAction(menuTarea->menuAction());
         menubar->addAction(menuCategorias->menuAction());
         menubar->addAction(menuEtiquetas->menuAction());
-        menuArchivo->addAction(actionSalir);
-        menuTarea->addAction(actionNueva);
+        menuArchivo->addAction(actionCerrar);
         menuCategorias->addAction(categoriaNueva);
         menuEtiquetas->addAction(etiquetaNueva);
 
         retranslateUi(MainWindow);
-        QObject::connect(actionSalir, SIGNAL(triggered()), MainWindow, SLOT(close()));
+        QObject::connect(actionCerrar, SIGNAL(triggered()), MainWindow, SLOT(close()));
 
         tabWidget->setCurrentIndex(0);
 
@@ -230,17 +228,18 @@ public:
         actionNueva->setText(QApplication::translate("MainWindow", "Nueva tarea", 0));
         categoriaNueva->setText(QApplication::translate("MainWindow", "Nueva categoria", 0));
         etiquetaNueva->setText(QApplication::translate("MainWindow", "Nueva etiqueta", 0));
+        actionCerrar->setText(QApplication::translate("MainWindow", "Cerrar", 0));
         groupBox->setTitle(QApplication::translate("MainWindow", "Etiquetas", 0));
         groupBox_2->setTitle(QApplication::translate("MainWindow", "Categorias", 0));
-        QTableWidgetItem *___qtablewidgetitem = tableTareas->horizontalHeaderItem(0);
+        QTableWidgetItem *___qtablewidgetitem = tblTareas->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("MainWindow", "Tarea", 0));
-        QTableWidgetItem *___qtablewidgetitem1 = tableTareas->horizontalHeaderItem(1);
+        QTableWidgetItem *___qtablewidgetitem1 = tblTareas->horizontalHeaderItem(1);
         ___qtablewidgetitem1->setText(QApplication::translate("MainWindow", "Fecha", 0));
-        QTableWidgetItem *___qtablewidgetitem2 = tableTareas->horizontalHeaderItem(2);
+        QTableWidgetItem *___qtablewidgetitem2 = tblTareas->horizontalHeaderItem(2);
         ___qtablewidgetitem2->setText(QApplication::translate("MainWindow", "Categoria", 0));
-        QTableWidgetItem *___qtablewidgetitem3 = tableTareas->horizontalHeaderItem(3);
+        QTableWidgetItem *___qtablewidgetitem3 = tblTareas->horizontalHeaderItem(3);
         ___qtablewidgetitem3->setText(QApplication::translate("MainWindow", "Etiquetas", 0));
-        QTableWidgetItem *___qtablewidgetitem4 = tableTareas->horizontalHeaderItem(4);
+        QTableWidgetItem *___qtablewidgetitem4 = tblTareas->horizontalHeaderItem(4);
         ___qtablewidgetitem4->setText(QApplication::translate("MainWindow", "Realizado", 0));
         QTableWidgetItem *___qtablewidgetitem5 = tareaEtiquetas->horizontalHeaderItem(0);
         ___qtablewidgetitem5->setText(QApplication::translate("MainWindow", "Asignada", 0));
@@ -254,7 +253,6 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(categorias), QApplication::translate("MainWindow", "Categorias", 0));
         tabWidget->setTabText(tabWidget->indexOf(etiquetas), QApplication::translate("MainWindow", "Etiquetas", 0));
         menuArchivo->setTitle(QApplication::translate("MainWindow", "Archivo", 0));
-        menuTarea->setTitle(QApplication::translate("MainWindow", "Tarea", 0));
         menuCategorias->setTitle(QApplication::translate("MainWindow", "Categorias", 0));
         menuEtiquetas->setTitle(QApplication::translate("MainWindow", "Etiquetas", 0));
     } // retranslateUi

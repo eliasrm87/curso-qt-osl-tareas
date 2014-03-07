@@ -58,7 +58,7 @@
            </widget>
           </item>
           <item row="3" column="0" colspan="2">
-           <widget class="QTableWidget" name="tableTareas">
+           <widget class="QTableWidget" name="tblTareas">
             <column>
              <property name="text">
               <string>Tarea</string>
@@ -186,13 +186,7 @@
     <property name="title">
      <string>Archivo</string>
     </property>
-    <addaction name="actionSalir"/>
-   </widget>
-   <widget class="QMenu" name="menuTarea">
-    <property name="title">
-     <string>Tarea</string>
-    </property>
-    <addaction name="actionNueva"/>
+    <addaction name="actionCerrar"/>
    </widget>
    <widget class="QMenu" name="menuCategorias">
     <property name="title">
@@ -207,7 +201,6 @@
     <addaction name="etiquetaNueva"/>
    </widget>
    <addaction name="menuArchivo"/>
-   <addaction name="menuTarea"/>
    <addaction name="menuCategorias"/>
    <addaction name="menuEtiquetas"/>
   </widget>
@@ -232,11 +225,16 @@
     <string>Nueva etiqueta</string>
    </property>
   </action>
+  <action name="actionCerrar">
+   <property name="text">
+    <string>Cerrar</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>actionSalir</sender>
+   <sender>actionCerrar</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
