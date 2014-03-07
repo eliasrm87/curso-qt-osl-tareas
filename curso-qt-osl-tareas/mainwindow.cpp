@@ -8,57 +8,50 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     //Setup database
-    ConecToDb(db_, "tareas");
+    if (!ConecToDb(db_, "tareas")) {
+        exit(0);
+    } else {
+        // Crea las tablas
+        createTables();
 
-    db_.exec("CREATE TABLE IF NOT EXISTS tareas ("
-              "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-              "name TEXT,"
-              "descripcion TEXT,"
-              "date TEXT,"
-              "done INTEGER,"
-              "id_categ INTEGER"
-              ");");
+        // Llena los datos mediante script (no implementado)
+        populateTables();
 
-    db_.exec("CREATE TABLE IF NOT EXISTS categorias ("
-              "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-              "name TEXT,"
-              "descripcion TEXT"
-              ");");
+        // Tareas
+        connect(ui->actionNuevaTarea, SIGNAL(triggered()), this, SLOT(onAddTarea()));
+        connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
+        connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
 
-    db_.exec("CREATE TABLE IF NOT EXISTS etiquetas ("
-              "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-              "name TEXT"
-              ");");
+        // Etiquetas
+        connect(ui->actionNuevaEtiq, SIGNAL(triggered()), this, SLOT(onAddEtiqueta()));
 
-    db_.exec("CREATE TABLE IF NOT EXISTS tareas_etiq ("
-              "id_tarea INTEGER,"
-              "id_etiq INTEGER"
-              ");");
+        // Categorías
+        connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCategoria()));
 
-    connect(ui->actionNuevaTarea, SIGNAL(triggered()), this, SLOT(onAddTarea()));
-    connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
-    connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
 
-    addingTarea_ = false;
+        addingTarea_ = false;
+        addingEtiqueta_ = false;
+        addingCategoria_ = false;
 
-    //Obtenemos las categorias
-    QSqlQuery q = db_.exec("SELECT * "
-                           "FROM categorias;");
+        // Obtenemos las categorias
+        QSqlQuery q = db_.exec("SELECT * "
+                               "FROM categorias;");
 
-    while (q.next()) {
-        //Añadimos la categoria al combo y como userData su ID
-        ui->comboCategoria->addItem(GetField(q,"name").toString(), GetField(q,"id").toInt());
+        while (q.next()) {
+            //Añadimos la categoria al combo y como userData su ID
+            ui->comboCategoria->addItem(GetField(q,"name").toString(), GetField(q,"id").toInt());
 
-        //Añadimos la categoria a la tabla de categorias
-        int rowNumber = ui->tblCateg->rowCount();
-        ui->tblCateg->insertRow(rowNumber);
-        QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
-        ui->tblCateg->setItem(rowNumber, 0, item);
+            //Añadimos la categoria a la tabla de categorias
+            int rowNumber = ui->tblCateg->rowCount();
+            ui->tblCateg->insertRow(rowNumber);
+            QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
+            ui->tblCateg->setItem(rowNumber, 0, item);
+        }
+        //Activamos el sorting en la tabla de categorias
+        ui->tblCateg->setSortingEnabled(true);
+
+        ui->comboCategoria->setCurrentIndex(0);
     }
-    //Activamos el sorting en la tabla de categorias
-    ui->tblCateg->setSortingEnabled(true);
-
-    ui->comboCategoria->setCurrentIndex(0);
 }
 
 MainWindow::~MainWindow()
@@ -96,22 +89,22 @@ void MainWindow::onTareasCellChanged(int row, int column)
 
     if (ui->tblTareas->item(row, 0)->data(Qt::UserRole).isNull()) {
         query = db_.exec("INSERT INTO tareas (name, descripcion, date, done, id_categ) "
-                 "VALUES ("+QString("'%1','%2','%3','%4','%5');" )\
-                 .arg(ui->tblTareas->item(row, 0)->text())\
-                 .arg(ui->txtTareaDescr->toPlainText())\
-                 .arg(ui->tblTareas->item(row, 1)->text())\
-                 .arg(checked)\
-                 .arg(ui->comboCategoria->currentData().toInt()));
+                         "VALUES ("+QString("'%1','%2','%3','%4','%5');" )\
+                         .arg(ui->tblTareas->item(row, 0)->text())\
+                         .arg(ui->txtTareaDescr->toPlainText())\
+                         .arg(ui->tblTareas->item(row, 1)->text())\
+                         .arg(checked)\
+                         .arg(ui->comboCategoria->currentData().toInt()));
         ui->tblTareas->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
     } else {
         query = db_.exec("UPDATE tareas "
-                 "SET "+QString("name='%1',descripcion='%2',date='%3',done='%4',id_categ='%5' " )\
-                 .arg(ui->tblTareas->item(row, 0)->text())\
-                 .arg(ui->txtTareaDescr->toPlainText())\
-                 .arg(ui->tblTareas->item(row, 1)->text())\
-                 .arg(checked)\
-                 .arg(ui->comboCategoria->currentData().toInt()) +
-                 "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
+                         "SET "+QString("name='%1',descripcion='%2',date='%3',done='%4',id_categ='%5' " )\
+                         .arg(ui->tblTareas->item(row, 0)->text())\
+                         .arg(ui->txtTareaDescr->toPlainText())\
+                         .arg(ui->tblTareas->item(row, 1)->text())\
+                         .arg(checked)\
+                         .arg(ui->comboCategoria->currentData().toInt()) +
+                         "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
     }
 
     addingTarea_ = false;
@@ -126,8 +119,8 @@ void MainWindow::onLoadTareas()
 
     //Obtenemos las tareas
     QSqlQuery q = db_.exec("SELECT * "
-                 "FROM tareas "
-                 "WHERE id_categ = " + ui->comboCategoria->currentData().toString());
+                           "FROM tareas "
+                           "WHERE id_categ = " + ui->comboCategoria->currentData().toString());
 
     while (q.next()) {
         //Añadimos la tarea a la tabla de categorias
@@ -152,4 +145,85 @@ void MainWindow::onLoadTareas()
     //Activamos el sorting en la tabla de categorias
     ui->tblTareas->setSortingEnabled(true);
     addingTarea_ = false;
+}
+
+void MainWindow::onAddEtiqueta()
+{
+    addingEtiqueta_ = true;
+
+    ui->tblEtiq->insertRow(ui->tblEtiq->rowCount());
+    ui->tblEtiq->setItem(ui->tblEtiq->rowCount()-1, 0, new QTableWidgetItem(""));
+
+    addingEtiqueta_ = false;
+}
+
+void MainWindow::onEtiquetasCellChanged(int row, int column)
+{
+    if (addingEtiqueta_)
+        return;
+
+    addingEtiqueta_ = true;
+
+    QSqlQuery query;
+
+    if (ui->tblEtiq->item(row, 0)->data(Qt::UserRole).isNull()) {
+        query = db_.exec("INSERT INTO etiquetas (id, name) "
+                         "VALUES ("+QString("'%1','%2');" )\
+                         .arg(ui->tblEtiq->item(row, 0)->text())\
+                         .arg(ui->tblEtiq->item(row, 1)->text())\
+                         .arg(ui->comboEtiqueta->currentData().toInt()));
+        ui->tblTareas->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
+    } else {
+        query = db_.exec("UPDATE etiquetas "
+                         "SET "+QString("id='%1', name='%2' " )\
+                         .arg(ui->tblEtiq->item(row, 0)->text())\
+                         .arg(ui->tblTareas->item(row, 1)->text())\
+                         .arg(ui->comboEtiqueta->currentData().toInt()) +
+                         "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
+    }
+
+    addingTarea_ = false;
+}
+
+void MainWindow::onAddCategoria()
+{
+    addingCategoria_ = true;
+
+    ui->tblCateg->insertRow(ui->tblCateg->rowCount());
+    ui->tblCateg->setItem(ui->tblCateg->rowCount()-1, 0, new QTableWidgetItem(""));
+
+    addingCategoria_ = false;
+}
+
+void MainWindow::createTables()
+{
+    db_.exec("CREATE TABLE IF NOT EXISTS tareas ("
+             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+             "name TEXT,"
+             "descripcion TEXT,"
+             "date TEXT,"
+             "done INTEGER,"
+             "id_categ INTEGER"
+             ");");
+
+    db_.exec("CREATE TABLE IF NOT EXISTS categorias ("
+             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+             "name TEXT,"
+             "descripcion TEXT"
+             ");");
+
+    db_.exec("CREATE TABLE IF NOT EXISTS etiquetas ("
+             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+             "name TEXT"
+             ");");
+
+    db_.exec("CREATE TABLE IF NOT EXISTS tareas_etiq ("
+             "id_tarea INTEGER,"
+             "id_etiq INTEGER"
+             ");");
+}
+
+void MainWindow::populateTables()
+{
+    // Inserta datos en la tabla
 }
