@@ -5,7 +5,7 @@
 #include <QStringList>
 #include <dbconnection.h>
 #include <QCheckBox>
-
+#include <QDebug>
 namespace Ui {
 class MainWindow;
 }
@@ -24,6 +24,7 @@ private:
     bool addingTarea_;
     bool addingCategoria_;
     bool addingEtiqueta_;
+    bool cambiaTarea_;
     void loadCategoria();
     void loadTareas();
     void loadEtiqueta();
@@ -34,7 +35,9 @@ private slots:
     void onAddTarea();
     void onGuardaCategoria(int row,int col);
     void onGuardaEtiqueta(int row,int col);
-    void onGuardaTarea();
+    void onGuardaTarea(int row, int col);
+    void cambiaCombo(int);
+    void mostrarDesc(int row,int col);
 
 
 };
