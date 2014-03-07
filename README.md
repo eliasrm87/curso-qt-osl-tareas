@@ -5,7 +5,7 @@ En esta ocasión veremos algunas de las funcionalides que provee QT5 para el acc
 
 Como mínimo, implementaremos las siguientes funcionalidades:
 
-* Mostrar lista de tareas con su nombre y fecha límite
+Mostrar lista de tareas con su nombre y fecha límite
 * Cada tarea debe poder ser marcada como realizada
 * Cada tarea puede tener una descripción que será mostrada al seleccionarla
 * Todos los datos han de ser guardados en una base de datos SQLite
