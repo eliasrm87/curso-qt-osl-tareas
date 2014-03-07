@@ -24,7 +24,6 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QTextEdit>
-#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -32,207 +31,193 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
-    QAction *actionNuevaTarea;
-    QAction *actionNuevaCateg;
-    QAction *actionNuevaEtiq;
     QAction *actionSalir;
+    QAction *actionNueva;
+    QAction *categoriaNueva;
+    QAction *etiquetaNueva;
     QWidget *centralwidget;
-    QVBoxLayout *verticalLayout_2;
-    QGridLayout *gridLayout_3;
-    QTabWidget *TabTareas;
-    QWidget *tab;
-    QGridLayout *gridLayout_5;
-    QGridLayout *gridLayout;
-    QGroupBox *groupBox_2;
-    QVBoxLayout *verticalLayout_5;
-    QVBoxLayout *verticalLayout_4;
-    QComboBox *comboEtiqueta;
-    QGroupBox *groupBox;
-    QVBoxLayout *verticalLayout_3;
-    QVBoxLayout *verticalLayout;
-    QComboBox *comboCategoria;
-    QTableWidget *tblTareas;
-    QTextEdit *txtTareaDescr;
-    QWidget *TabCategorias;
-    QGridLayout *gridLayout_4;
     QGridLayout *gridLayout_2;
-    QTableWidget *tblCateg;
-    QTextEdit *txtCategDescr;
-    QWidget *TabEtiquetas;
+    QGridLayout *gridLayout;
+    QTabWidget *tabWidget;
+    QWidget *tareas;
+    QGridLayout *gridLayout_4;
+    QGroupBox *groupBox;
     QGridLayout *gridLayout_7;
+    QComboBox *comboEtiquetas;
+    QGroupBox *groupBox_2;
     QGridLayout *gridLayout_6;
-    QTableWidget *tblEtiq;
+    QComboBox *comboCategorias;
+    QTableWidget *tableTareas;
+    QTextEdit *tareaDescription;
+    QTableWidget *tareaEtiquetas;
+    QWidget *categorias;
+    QGridLayout *gridLayout_3;
+    QTableWidget *tableCategorias;
+    QWidget *etiquetas;
+    QGridLayout *gridLayout_5;
+    QTableWidget *tableEtiquetas;
     QMenuBar *menubar;
-    QMenu *menuTareas;
+    QMenu *menuArchivo;
+    QMenu *menuTarea;
     QMenu *menuCategorias;
     QMenu *menuEtiquetas;
-    QMenu *menuArchivo;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(800, 600);
-        actionNuevaTarea = new QAction(MainWindow);
-        actionNuevaTarea->setObjectName(QStringLiteral("actionNuevaTarea"));
-        actionNuevaCateg = new QAction(MainWindow);
-        actionNuevaCateg->setObjectName(QStringLiteral("actionNuevaCateg"));
-        actionNuevaEtiq = new QAction(MainWindow);
-        actionNuevaEtiq->setObjectName(QStringLiteral("actionNuevaEtiq"));
+        MainWindow->resize(635, 420);
+        MainWindow->setMinimumSize(QSize(0, 0));
         actionSalir = new QAction(MainWindow);
         actionSalir->setObjectName(QStringLiteral("actionSalir"));
+        actionNueva = new QAction(MainWindow);
+        actionNueva->setObjectName(QStringLiteral("actionNueva"));
+        categoriaNueva = new QAction(MainWindow);
+        categoriaNueva->setObjectName(QStringLiteral("categoriaNueva"));
+        etiquetaNueva = new QAction(MainWindow);
+        etiquetaNueva->setObjectName(QStringLiteral("etiquetaNueva"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
-        verticalLayout_2 = new QVBoxLayout(centralwidget);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        gridLayout_3 = new QGridLayout();
-        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
-        TabTareas = new QTabWidget(centralwidget);
-        TabTareas->setObjectName(QStringLiteral("TabTareas"));
-        tab = new QWidget();
-        tab->setObjectName(QStringLiteral("tab"));
-        gridLayout_5 = new QGridLayout(tab);
-        gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
+        gridLayout_2 = new QGridLayout(centralwidget);
+        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
         gridLayout = new QGridLayout();
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        groupBox_2 = new QGroupBox(tab);
-        groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
-        verticalLayout_5 = new QVBoxLayout(groupBox_2);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        comboEtiqueta = new QComboBox(groupBox_2);
-        comboEtiqueta->setObjectName(QStringLiteral("comboEtiqueta"));
-
-        verticalLayout_4->addWidget(comboEtiqueta);
-
-
-        verticalLayout_5->addLayout(verticalLayout_4);
-
-
-        gridLayout->addWidget(groupBox_2, 0, 1, 1, 1);
-
-        groupBox = new QGroupBox(tab);
-        groupBox->setObjectName(QStringLiteral("groupBox"));
-        verticalLayout_3 = new QVBoxLayout(groupBox);
-        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
-        verticalLayout = new QVBoxLayout();
-        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        comboCategoria = new QComboBox(groupBox);
-        comboCategoria->setObjectName(QStringLiteral("comboCategoria"));
-
-        verticalLayout->addWidget(comboCategoria);
-
-
-        verticalLayout_3->addLayout(verticalLayout);
-
-
-        gridLayout->addWidget(groupBox, 0, 0, 1, 1);
-
-        tblTareas = new QTableWidget(tab);
-        if (tblTareas->columnCount() < 3)
-            tblTareas->setColumnCount(3);
-        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
-        tblTareas->setHorizontalHeaderItem(0, __qtablewidgetitem);
-        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
-        tblTareas->setHorizontalHeaderItem(1, __qtablewidgetitem1);
-        QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
-        tblTareas->setHorizontalHeaderItem(2, __qtablewidgetitem2);
-        tblTareas->setObjectName(QStringLiteral("tblTareas"));
-
-        gridLayout->addWidget(tblTareas, 1, 0, 1, 2);
-
-        txtTareaDescr = new QTextEdit(tab);
-        txtTareaDescr->setObjectName(QStringLiteral("txtTareaDescr"));
-        txtTareaDescr->setMaximumSize(QSize(16777215, 200));
-
-        gridLayout->addWidget(txtTareaDescr, 2, 0, 1, 2);
-
-
-        gridLayout_5->addLayout(gridLayout, 0, 0, 1, 1);
-
-        TabTareas->addTab(tab, QString());
-        TabCategorias = new QWidget();
-        TabCategorias->setObjectName(QStringLiteral("TabCategorias"));
-        gridLayout_4 = new QGridLayout(TabCategorias);
+        tabWidget = new QTabWidget(centralwidget);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        tareas = new QWidget();
+        tareas->setObjectName(QStringLiteral("tareas"));
+        gridLayout_4 = new QGridLayout(tareas);
         gridLayout_4->setObjectName(QStringLiteral("gridLayout_4"));
-        gridLayout_2 = new QGridLayout();
-        gridLayout_2->setObjectName(QStringLiteral("gridLayout_2"));
-        tblCateg = new QTableWidget(TabCategorias);
-        if (tblCateg->columnCount() < 1)
-            tblCateg->setColumnCount(1);
-        QTableWidgetItem *__qtablewidgetitem3 = new QTableWidgetItem();
-        tblCateg->setHorizontalHeaderItem(0, __qtablewidgetitem3);
-        tblCateg->setObjectName(QStringLiteral("tblCateg"));
-
-        gridLayout_2->addWidget(tblCateg, 0, 0, 1, 1);
-
-        txtCategDescr = new QTextEdit(TabCategorias);
-        txtCategDescr->setObjectName(QStringLiteral("txtCategDescr"));
-        txtCategDescr->setMaximumSize(QSize(16777215, 200));
-
-        gridLayout_2->addWidget(txtCategDescr, 1, 0, 1, 1);
-
-
-        gridLayout_4->addLayout(gridLayout_2, 0, 0, 1, 1);
-
-        TabTareas->addTab(TabCategorias, QString());
-        TabEtiquetas = new QWidget();
-        TabEtiquetas->setObjectName(QStringLiteral("TabEtiquetas"));
-        gridLayout_7 = new QGridLayout(TabEtiquetas);
+        groupBox = new QGroupBox(tareas);
+        groupBox->setObjectName(QStringLiteral("groupBox"));
+        gridLayout_7 = new QGridLayout(groupBox);
         gridLayout_7->setObjectName(QStringLiteral("gridLayout_7"));
-        gridLayout_6 = new QGridLayout();
+        comboEtiquetas = new QComboBox(groupBox);
+        comboEtiquetas->setObjectName(QStringLiteral("comboEtiquetas"));
+
+        gridLayout_7->addWidget(comboEtiquetas, 0, 0, 1, 1);
+
+
+        gridLayout_4->addWidget(groupBox, 0, 1, 1, 1);
+
+        groupBox_2 = new QGroupBox(tareas);
+        groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
+        gridLayout_6 = new QGridLayout(groupBox_2);
         gridLayout_6->setObjectName(QStringLiteral("gridLayout_6"));
-        tblEtiq = new QTableWidget(TabEtiquetas);
-        if (tblEtiq->columnCount() < 1)
-            tblEtiq->setColumnCount(1);
+        comboCategorias = new QComboBox(groupBox_2);
+        comboCategorias->setObjectName(QStringLiteral("comboCategorias"));
+
+        gridLayout_6->addWidget(comboCategorias, 0, 0, 1, 1);
+
+
+        gridLayout_4->addWidget(groupBox_2, 0, 0, 1, 1);
+
+        tableTareas = new QTableWidget(tareas);
+        if (tableTareas->columnCount() < 5)
+            tableTareas->setColumnCount(5);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        tableTareas->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
+        tableTareas->setHorizontalHeaderItem(1, __qtablewidgetitem1);
+        QTableWidgetItem *__qtablewidgetitem2 = new QTableWidgetItem();
+        tableTareas->setHorizontalHeaderItem(2, __qtablewidgetitem2);
+        QTableWidgetItem *__qtablewidgetitem3 = new QTableWidgetItem();
+        tableTareas->setHorizontalHeaderItem(3, __qtablewidgetitem3);
         QTableWidgetItem *__qtablewidgetitem4 = new QTableWidgetItem();
-        tblEtiq->setHorizontalHeaderItem(0, __qtablewidgetitem4);
-        tblEtiq->setObjectName(QStringLiteral("tblEtiq"));
+        tableTareas->setHorizontalHeaderItem(4, __qtablewidgetitem4);
+        tableTareas->setObjectName(QStringLiteral("tableTareas"));
 
-        gridLayout_6->addWidget(tblEtiq, 0, 0, 1, 1);
+        gridLayout_4->addWidget(tableTareas, 3, 0, 1, 2);
+
+        tareaDescription = new QTextEdit(tareas);
+        tareaDescription->setObjectName(QStringLiteral("tareaDescription"));
+        tareaDescription->setMinimumSize(QSize(0, 75));
+        tareaDescription->setMaximumSize(QSize(16777215, 75));
+
+        gridLayout_4->addWidget(tareaDescription, 4, 0, 1, 1);
+
+        tareaEtiquetas = new QTableWidget(tareas);
+        if (tareaEtiquetas->columnCount() < 2)
+            tareaEtiquetas->setColumnCount(2);
+        QTableWidgetItem *__qtablewidgetitem5 = new QTableWidgetItem();
+        tareaEtiquetas->setHorizontalHeaderItem(0, __qtablewidgetitem5);
+        QTableWidgetItem *__qtablewidgetitem6 = new QTableWidgetItem();
+        tareaEtiquetas->setHorizontalHeaderItem(1, __qtablewidgetitem6);
+        tareaEtiquetas->setObjectName(QStringLiteral("tareaEtiquetas"));
+        tareaEtiquetas->setMinimumSize(QSize(0, 75));
+        tareaEtiquetas->setMaximumSize(QSize(16777215, 150));
+
+        gridLayout_4->addWidget(tareaEtiquetas, 4, 1, 1, 1);
+
+        tabWidget->addTab(tareas, QString());
+        categorias = new QWidget();
+        categorias->setObjectName(QStringLiteral("categorias"));
+        gridLayout_3 = new QGridLayout(categorias);
+        gridLayout_3->setObjectName(QStringLiteral("gridLayout_3"));
+        tableCategorias = new QTableWidget(categorias);
+        if (tableCategorias->columnCount() < 2)
+            tableCategorias->setColumnCount(2);
+        QTableWidgetItem *__qtablewidgetitem7 = new QTableWidgetItem();
+        tableCategorias->setHorizontalHeaderItem(0, __qtablewidgetitem7);
+        QTableWidgetItem *__qtablewidgetitem8 = new QTableWidgetItem();
+        tableCategorias->setHorizontalHeaderItem(1, __qtablewidgetitem8);
+        tableCategorias->setObjectName(QStringLiteral("tableCategorias"));
+
+        gridLayout_3->addWidget(tableCategorias, 0, 0, 1, 1);
+
+        tabWidget->addTab(categorias, QString());
+        etiquetas = new QWidget();
+        etiquetas->setObjectName(QStringLiteral("etiquetas"));
+        gridLayout_5 = new QGridLayout(etiquetas);
+        gridLayout_5->setObjectName(QStringLiteral("gridLayout_5"));
+        tableEtiquetas = new QTableWidget(etiquetas);
+        if (tableEtiquetas->columnCount() < 1)
+            tableEtiquetas->setColumnCount(1);
+        QTableWidgetItem *__qtablewidgetitem9 = new QTableWidgetItem();
+        __qtablewidgetitem9->setText(QStringLiteral("Nombre"));
+        tableEtiquetas->setHorizontalHeaderItem(0, __qtablewidgetitem9);
+        tableEtiquetas->setObjectName(QStringLiteral("tableEtiquetas"));
+
+        gridLayout_5->addWidget(tableEtiquetas, 0, 0, 1, 1);
+
+        tabWidget->addTab(etiquetas, QString());
+
+        gridLayout->addWidget(tabWidget, 2, 0, 1, 1);
 
 
-        gridLayout_7->addLayout(gridLayout_6, 0, 0, 1, 1);
-
-        TabTareas->addTab(TabEtiquetas, QString());
-
-        gridLayout_3->addWidget(TabTareas, 0, 0, 1, 1);
-
-
-        verticalLayout_2->addLayout(gridLayout_3);
+        gridLayout_2->addLayout(gridLayout, 0, 0, 1, 1);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 800, 19));
-        menuTareas = new QMenu(menubar);
-        menuTareas->setObjectName(QStringLiteral("menuTareas"));
+        menubar->setGeometry(QRect(0, 0, 635, 20));
+        menuArchivo = new QMenu(menubar);
+        menuArchivo->setObjectName(QStringLiteral("menuArchivo"));
+        menuTarea = new QMenu(menubar);
+        menuTarea->setObjectName(QStringLiteral("menuTarea"));
         menuCategorias = new QMenu(menubar);
         menuCategorias->setObjectName(QStringLiteral("menuCategorias"));
         menuEtiquetas = new QMenu(menubar);
         menuEtiquetas->setObjectName(QStringLiteral("menuEtiquetas"));
-        menuArchivo = new QMenu(menubar);
-        menuArchivo->setObjectName(QStringLiteral("menuArchivo"));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QStringLiteral("statusbar"));
         MainWindow->setStatusBar(statusbar);
 
         menubar->addAction(menuArchivo->menuAction());
-        menubar->addAction(menuTareas->menuAction());
+        menubar->addAction(menuTarea->menuAction());
         menubar->addAction(menuCategorias->menuAction());
         menubar->addAction(menuEtiquetas->menuAction());
-        menuTareas->addAction(actionNuevaTarea);
-        menuCategorias->addAction(actionNuevaCateg);
-        menuEtiquetas->addAction(actionNuevaEtiq);
         menuArchivo->addAction(actionSalir);
+        menuTarea->addAction(actionNueva);
+        menuCategorias->addAction(categoriaNueva);
+        menuEtiquetas->addAction(etiquetaNueva);
 
         retranslateUi(MainWindow);
         QObject::connect(actionSalir, SIGNAL(triggered()), MainWindow, SLOT(close()));
 
-        TabTareas->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -241,29 +226,37 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
-        actionNuevaTarea->setText(QApplication::translate("MainWindow", "Nueva", 0));
-        actionNuevaCateg->setText(QApplication::translate("MainWindow", "Nueva", 0));
-        actionNuevaEtiq->setText(QApplication::translate("MainWindow", "Nueva", 0));
         actionSalir->setText(QApplication::translate("MainWindow", "Salir", 0));
-        groupBox_2->setTitle(QApplication::translate("MainWindow", "Etiqueta", 0));
-        groupBox->setTitle(QApplication::translate("MainWindow", "Categoria", 0));
-        QTableWidgetItem *___qtablewidgetitem = tblTareas->horizontalHeaderItem(0);
+        actionNueva->setText(QApplication::translate("MainWindow", "Nueva tarea", 0));
+        categoriaNueva->setText(QApplication::translate("MainWindow", "Nueva categoria", 0));
+        etiquetaNueva->setText(QApplication::translate("MainWindow", "Nueva etiqueta", 0));
+        groupBox->setTitle(QApplication::translate("MainWindow", "Etiquetas", 0));
+        groupBox_2->setTitle(QApplication::translate("MainWindow", "Categorias", 0));
+        QTableWidgetItem *___qtablewidgetitem = tableTareas->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("MainWindow", "Tarea", 0));
-        QTableWidgetItem *___qtablewidgetitem1 = tblTareas->horizontalHeaderItem(1);
+        QTableWidgetItem *___qtablewidgetitem1 = tableTareas->horizontalHeaderItem(1);
         ___qtablewidgetitem1->setText(QApplication::translate("MainWindow", "Fecha", 0));
-        QTableWidgetItem *___qtablewidgetitem2 = tblTareas->horizontalHeaderItem(2);
-        ___qtablewidgetitem2->setText(QApplication::translate("MainWindow", "Hecho", 0));
-        TabTareas->setTabText(TabTareas->indexOf(tab), QApplication::translate("MainWindow", "Tareas", 0));
-        QTableWidgetItem *___qtablewidgetitem3 = tblCateg->horizontalHeaderItem(0);
-        ___qtablewidgetitem3->setText(QApplication::translate("MainWindow", "Categoria", 0));
-        TabTareas->setTabText(TabTareas->indexOf(TabCategorias), QApplication::translate("MainWindow", "Categorias", 0));
-        QTableWidgetItem *___qtablewidgetitem4 = tblEtiq->horizontalHeaderItem(0);
-        ___qtablewidgetitem4->setText(QApplication::translate("MainWindow", "Etiqueta", 0));
-        TabTareas->setTabText(TabTareas->indexOf(TabEtiquetas), QApplication::translate("MainWindow", "Etiquetas", 0));
-        menuTareas->setTitle(QApplication::translate("MainWindow", "Tareas", 0));
+        QTableWidgetItem *___qtablewidgetitem2 = tableTareas->horizontalHeaderItem(2);
+        ___qtablewidgetitem2->setText(QApplication::translate("MainWindow", "Categoria", 0));
+        QTableWidgetItem *___qtablewidgetitem3 = tableTareas->horizontalHeaderItem(3);
+        ___qtablewidgetitem3->setText(QApplication::translate("MainWindow", "Etiquetas", 0));
+        QTableWidgetItem *___qtablewidgetitem4 = tableTareas->horizontalHeaderItem(4);
+        ___qtablewidgetitem4->setText(QApplication::translate("MainWindow", "Realizado", 0));
+        QTableWidgetItem *___qtablewidgetitem5 = tareaEtiquetas->horizontalHeaderItem(0);
+        ___qtablewidgetitem5->setText(QApplication::translate("MainWindow", "Asignada", 0));
+        QTableWidgetItem *___qtablewidgetitem6 = tareaEtiquetas->horizontalHeaderItem(1);
+        ___qtablewidgetitem6->setText(QApplication::translate("MainWindow", "Etiqueta", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tareas), QApplication::translate("MainWindow", "Tareas", 0));
+        QTableWidgetItem *___qtablewidgetitem7 = tableCategorias->horizontalHeaderItem(0);
+        ___qtablewidgetitem7->setText(QApplication::translate("MainWindow", "Nombre", 0));
+        QTableWidgetItem *___qtablewidgetitem8 = tableCategorias->horizontalHeaderItem(1);
+        ___qtablewidgetitem8->setText(QApplication::translate("MainWindow", "Descripcion", 0));
+        tabWidget->setTabText(tabWidget->indexOf(categorias), QApplication::translate("MainWindow", "Categorias", 0));
+        tabWidget->setTabText(tabWidget->indexOf(etiquetas), QApplication::translate("MainWindow", "Etiquetas", 0));
+        menuArchivo->setTitle(QApplication::translate("MainWindow", "Archivo", 0));
+        menuTarea->setTitle(QApplication::translate("MainWindow", "Tarea", 0));
         menuCategorias->setTitle(QApplication::translate("MainWindow", "Categorias", 0));
         menuEtiquetas->setTitle(QApplication::translate("MainWindow", "Etiquetas", 0));
-        menuArchivo->setTitle(QApplication::translate("MainWindow", "Archivo", 0));
     } // retranslateUi
 
 };
