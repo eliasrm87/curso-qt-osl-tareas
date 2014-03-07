@@ -24,12 +24,16 @@ private slots:
     void onTareasCellChanged(int row, int column);
     void onLoadTareas();
 
+
     // Etiquetas
     void onAddEtiqueta();
     void onEtiquetasCellChanged(int row, int column);
 
+
     // Categorias
     void onAddCategoria();
+    void onCategoriasCellChanged(int row, int column);
+
 
 private:
     Ui::MainWindow *ui;
@@ -41,6 +45,11 @@ private:
     // Construye la base de datos
     void createTables();
     void populateTables();
+
+    // Carga la base datos
+    void obtenerTareas();
+    void obtenerEtiquetas();
+    void obtenerCategorias();
 };
 
 #endif // MAINWINDOW_H
