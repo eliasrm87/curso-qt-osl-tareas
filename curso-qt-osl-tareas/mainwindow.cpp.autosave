@@ -204,6 +204,7 @@ void MainWindow::onAddTarea()
 void MainWindow::onTareaTxtChanged()
 {
     addingTarea_ = true;
+    
 
     QString cadena_get = ui->txtTareaDescr->toPlainText(); // Obtenemos el contenido del campo descripcion
     QSqlQuery q = db_.exec("SELECT * FROM tareas;");
