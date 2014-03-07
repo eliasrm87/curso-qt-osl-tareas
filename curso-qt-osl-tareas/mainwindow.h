@@ -18,14 +18,38 @@ public:
     ~MainWindow();
 
 private slots:
+
+    // Tareas
     void onAddTarea();
     void onTareasCellChanged(int row, int column);
     void onLoadTareas();
+
+
+    // Etiquetas
+    void onAddEtiqueta();
+    void onEtiquetasCellChanged(int row, int column);
+
+
+    // Categorias
+    void onAddCategoria();
+    void onCategoriasCellChanged(int row, int column);
+
 
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db_;
     bool addingTarea_;
+    bool addingEtiqueta_;
+    bool addingCategoria_;
+
+    // Construye la base de datos
+    void createTables();
+    void populateTables();
+
+    // Carga la base datos
+    void obtenerTareas();
+    void obtenerEtiquetas();
+    void obtenerCategorias();
 };
 
 #endif // MAINWINDOW_H

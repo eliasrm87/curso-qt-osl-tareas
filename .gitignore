@@ -3,3 +3,4 @@ moc_*
 *.pro.user*
 *.exe
 callgrind.out.*
+build-curso-qt-osl-tareas-Desktop_Qt_5_2_1_GCC_32bit-Debug/
