@@ -13,7 +13,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    dblist.cpp
 
 HEADERS  += mainwindow.h \
-    dbconnection.h
+    dbconnection.h \
+    dblist.h

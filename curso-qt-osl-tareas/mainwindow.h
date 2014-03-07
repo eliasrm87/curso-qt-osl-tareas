@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QSqlDatabase>
 #include "dbconnection.h"
+#include "dblist.h"
 
 class MainWindow : public QMainWindow
 {
@@ -15,7 +16,7 @@ public:
 
 private:
     QSqlDatabase db_;
-
+    dblist* dbList_;
 };
 
 #endif // MAINWINDOW_H
