@@ -20,6 +20,8 @@
 #include <QComboBox>
 #include <QSignalMapper>
 #include <QAction>
+#include <QPoint>
+#include <QCursor>
 
 
 class MainWindow : public QMainWindow
@@ -41,6 +43,7 @@ private:
     QSqlQuery q_tar;
     QSqlQuery q_etiq;
 
+    QList<QComboBox*> comboL;
 
     QWidget* wgtMain_;
     QGridLayout* lytMain_;
@@ -63,6 +66,7 @@ private slots:
     void mostrarTareas();
     void inicializaBD();
     void guardarDescripcion();
+    void setCategoria (QString cat);
 };
 
 #endif // MAINWINDOW_H

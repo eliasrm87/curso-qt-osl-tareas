@@ -189,7 +189,18 @@ void MainWindow::mostrarCategorias () {
     } while (q_cat.next());
     categorias_->insertRow(row);
 
+
     connect(mapper,SIGNAL(mapped(QString)),this,SLOT(cambiaCategoria(QString)));
+
+}
+
+
+void MainWindow::setCategoria (QString cat) {
+   /* QStringList catL = cat.split("-");
+    int id_tarea = catL.at(1).toInt();
+    int row = catL.at(0).toInt();
+    qDebug() << "id_tarea: " << id_tarea << " row: " << row;*/
+    qDebug() << cat;
 
 }
 
@@ -300,20 +311,23 @@ void MainWindow::mostrarTareas () {
 
         QSqlQuery q_cat_tar = db_.exec("SELECT name FROM categorias WHERE id = "+id_cat+";");
 
-        QComboBox *combo = new QComboBox(this);
+        QComboBox* combo = new QComboBox(this);
+        comboL.insert(row, combo);
         q_cat.first();
         QStringList listaCat;
 
         if (id_cat == "-1") {
             listaCat << "Sin categoria";
+            combo->addItem("Sin categoria", "hola");
         }
         do {
             if (q_cat.isValid()) {
                 listaCat << q_cat.value(1).toString();
+                combo->addItem(q_cat.value(1).toString(), "hola");
             }
         } while (q_cat.next());
 
-        combo->addItems(listaCat);
+       // combo->addItems(listaCat);
 
         q_cat_tar.first();
         QString categorias_tarea;
@@ -324,8 +338,23 @@ void MainWindow::mostrarTareas () {
             categorias_tarea = q_cat_tar.value(0).toString();
         }
 
+
         combo->setCurrentText(categorias_tarea);
+
+        combo->setUserData(row, (QObjectUserData*)"hola");
+
+
         tareas_->setCellWidget(row,3,combo);
+
+        //QSignalMapper* mapper = new QSignalMapper(tareas_);
+
+
+        //connect(combo, SIGNAL(currentTextChanged(QString)), mapper, SLOT(map()));
+
+        connect(combo, SIGNAL(currentTextChanged(QString)), this, SLOT(setCategoria(QString)));
+
+        //mapper->setMapping(combo, QString("%1-%2").arg(row).arg(id_tarea));
+        //connect(mapper,SIGNAL(mapped(QString)),this,SLOT(setCategoria(QString)));
 
         QSqlQuery q_tar_etiq = db_.exec("SELECT e.name FROM  tareas t, etiquetas e, tareas_etiq x WHERE t.id = x.id_tarea AND e.id = x.id_etiq AND t.id = "+id_tarea+";");
 
