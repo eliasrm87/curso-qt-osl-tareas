@@ -39,7 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
     connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
 
+    connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCategoria()));
+
     addingTarea_ = false;
+    addingCateg_ = false;
 
     //Obtenemos las categorias
     QSqlQuery q = db_.exec("SELECT * "
@@ -70,17 +73,46 @@ void MainWindow::onAddTarea()
 {
     addingTarea_ = true;
 
-    ui->tblTareas->insertRow(ui->tblTareas->rowCount());
+    int rowNumber = ui->tblTareas->rowCount();
+
+    ui->tblTareas->insertRow(rowNumber);
     QTableWidgetItem* item = new QTableWidgetItem("");
     item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     item->setCheckState(Qt::Unchecked);
-    ui->tblTareas->setItem(ui->tblTareas->rowCount()-1, 2, item);
+    ui->tblTareas->setItem(rowNumber, 2, item);
 
-    ui->tblTareas->setItem(ui->tblTareas->rowCount()-1, 0, new QTableWidgetItem(""));
-    ui->tblTareas->setItem(ui->tblTareas->rowCount()-1, 1, new QTableWidgetItem(""));
+    ui->tblTareas->setItem(rowNumber, 0, new QTableWidgetItem(""));
+    ui->tblTareas->setItem(rowNumber, 1, new QTableWidgetItem(""));
 
 
     addingTarea_ = false;
+}
+
+void MainWindow::onAddCategoria(){
+    addingCateg_ =  true;
+
+    int rowNumber = ui->tblCateg->rowCount();
+
+    ui->tblCateg->insertRow(rowNumber);
+    QTableWidgetItem* item = new QTableWidgetItem("");
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setCheckState(Qt::Unchecked);
+    ui->tblCateg->setItem(rowNumber,0,new QTableWidgetItem(""));
+    ui->tblCateg->setItem(rowNumber,1, new QTableWidgetItem(""));
+
+    onAddComboCategorias();
+
+    addingCateg_ = false;
+}
+
+void MainWindow::onAddComboCategorias(){
+    //Obtenemos las categorias.
+    QSqlQuery q = db_.exec("SELECT name "
+                 "FROM categorias ");
+    while(q.next()){
+        ui->comboCategoria->addItem(q.lastQuery());
+    }
+
 }
 
 void MainWindow::onTareasCellChanged(int row, int column)
