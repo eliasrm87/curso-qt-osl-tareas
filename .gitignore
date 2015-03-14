@@ -3,3 +3,4 @@ moc_*
 *.pro.user*
 *.exe
 callgrind.out.*
+build/

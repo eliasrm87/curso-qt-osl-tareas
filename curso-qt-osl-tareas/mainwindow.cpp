@@ -1,10 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
+#include "addcategorydialog.h"
+
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     //Setup database
@@ -38,99 +37,83 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionNuevaTarea, SIGNAL(triggered()), this, SLOT(onAddTarea()));
     connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
     connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
+    connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCategoria()));
+    connect(ui->actionNuevaEtiq, SIGNAL(triggered()), this, SLOT(onAddEtiqueta()));
 
     addingTarea_ = false;
 
-    //Obtenemos las categorias
-    QSqlQuery q = db_.exec("SELECT * "
-                           "FROM categorias;");
+    onLoadCategorias();
+    onLoadEtiquetas();
 
-    while (q.next()) {
-        //Añadimos la categoria al combo y como userData su ID
-        ui->comboCategoria->addItem(GetField(q,"name").toString(), GetField(q,"id").toInt());
-
-        //Añadimos la categoria a la tabla de categorias
-        int rowNumber = ui->tblCateg->rowCount();
-        ui->tblCateg->insertRow(rowNumber);
-        QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
-        ui->tblCateg->setItem(rowNumber, 0, item);
-    }
-    //Activamos el sorting en la tabla de categorias
+    // Activamos el sorting
     ui->tblCateg->setSortingEnabled(true);
+    ui->tblEtiq->setSortingEnabled(true);
+    ui->tblTareas->setSortingEnabled(true);
 
     ui->comboCategoria->setCurrentIndex(0);
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::onAddTarea()
-{
-    addingTarea_ = true;
-
-    ui->tblTareas->insertRow(ui->tblTareas->rowCount());
-    QTableWidgetItem* item = new QTableWidgetItem("");
-    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-    item->setCheckState(Qt::Unchecked);
-    ui->tblTareas->setItem(ui->tblTareas->rowCount()-1, 2, item);
-
-    ui->tblTareas->setItem(ui->tblTareas->rowCount()-1, 0, new QTableWidgetItem(""));
-    ui->tblTareas->setItem(ui->tblTareas->rowCount()-1, 1, new QTableWidgetItem(""));
-
-
-    addingTarea_ = false;
-}
-
-void MainWindow::onTareasCellChanged(int row, int column)
-{
-    if (addingTarea_)
+void MainWindow::onAddTarea() {
+    // No añadimos tareas si está seleccionada la categoría "Todas"
+    if (ui->comboCategoria->currentData().toInt() == -1)
         return;
 
     addingTarea_ = true;
 
-    int checked = (ui->tblTareas->item(row, 2)->checkState() == Qt::Checked);
+    int tareaNumber = ui->tblTareas->rowCount();
+    ui->tblTareas->insertRow(tareaNumber);
 
-    QSqlQuery query;
+    QTableWidgetItem* item = new QTableWidgetItem("");
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setCheckState(Qt::Unchecked);
 
-    if (ui->tblTareas->item(row, 0)->data(Qt::UserRole).isNull()) {
-        query = db_.exec("INSERT INTO tareas (name, descripcion, date, done, id_categ) "
-                 "VALUES ("+QString("'%1','%2','%3','%4','%5');" )\
-                 .arg(ui->tblTareas->item(row, 0)->text())\
-                 .arg(ui->txtTareaDescr->toPlainText())\
-                 .arg(ui->tblTareas->item(row, 1)->text())\
-                 .arg(checked)\
-                 .arg(ui->comboCategoria->currentData().toInt()));
-        ui->tblTareas->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
-    } else {
-        query = db_.exec("UPDATE tareas "
-                 "SET "+QString("name='%1',descripcion='%2',date='%3',done='%4',id_categ='%5' " )\
-                 .arg(ui->tblTareas->item(row, 0)->text())\
-                 .arg(ui->txtTareaDescr->toPlainText())\
-                 .arg(ui->tblTareas->item(row, 1)->text())\
-                 .arg(checked)\
-                 .arg(ui->comboCategoria->currentData().toInt()) +
-                 "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
-    }
+    ui->tblTareas->setItem(tareaNumber, 0, new QTableWidgetItem(""));
+    ui->tblTareas->setItem(tareaNumber, 1, new QTableWidgetItem(""));
+    ui->tblTareas->setItem(tareaNumber, 2, item);
 
     addingTarea_ = false;
 }
 
-void MainWindow::onLoadTareas()
-{
+void MainWindow::onAddCategoria() {
+  AddCategoryDialog* dialog = new AddCategoryDialog;
+  QStringList categories;
+
+  for (int i = 0; i < ui->comboCategoria->count(); ++i)
+    categories.append(ui->comboCategoria->itemText(i));
+
+  dialog->setExistingCategories(categories);
+  dialog->setWindowModality(Qt::ApplicationModal);
+
+  connect(dialog, SIGNAL(createCategory(QString)), this, SLOT(onCreateCategoria(QString)));
+
+  dialog->setVisible(true);
+  dialog->show();
+}
+
+void MainWindow::onAddEtiqueta() {
+
+}
+
+void MainWindow::onLoadTareas() {
     addingTarea_ = true;
 
     while (ui->tblTareas->rowCount())
         ui->tblTareas->removeRow(0);
 
     //Obtenemos las tareas
-    QSqlQuery q = db_.exec("SELECT * "
-                 "FROM tareas "
-                 "WHERE id_categ = " + ui->comboCategoria->currentData().toString());
+    QString query = "SELECT * FROM tareas ";
+    QVariant catData = ui->comboCategoria->currentData();
+    if (catData.toInt() != -1)
+      query += "WHERE id_categ = " + catData.toString();
+
+    QSqlQuery q = db_.exec(query);
 
     while (q.next()) {
-        //Añadimos la tarea a la tabla de categorias
+        //Añadimos la tarea a la tabla de tareas
         int rowNumber = ui->tblTareas->rowCount();
         int id = GetField(q, "id").toInt();
         ui->tblTareas->insertRow(rowNumber);
@@ -149,7 +132,88 @@ void MainWindow::onLoadTareas()
             item->setCheckState(Qt::Unchecked);
         ui->tblTareas->setItem(rowNumber, 2, item);
     }
-    //Activamos el sorting en la tabla de categorias
-    ui->tblTareas->setSortingEnabled(true);
+
     addingTarea_ = false;
+}
+
+void MainWindow::onLoadCategorias() {
+  // Categoría general para todas las categorías
+  ui->comboCategoria->addItem("Todas", -1);
+
+  //Obtenemos las categorias
+  QSqlQuery q = db_.exec("SELECT * "
+                         "FROM categorias;");
+
+  while (q.next()) {
+      //Añadimos la categoria al combo y como userData su ID
+      ui->comboCategoria->addItem(GetField(q,"name").toString(), GetField(q,"id").toInt());
+
+      //Añadimos la categoria a la tabla de categorias
+      int rowNumber = ui->tblCateg->rowCount();
+      ui->tblCateg->insertRow(rowNumber);
+      QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
+      ui->tblCateg->setItem(rowNumber, 0, item);
+  }
+}
+
+void MainWindow::onLoadEtiquetas() {
+  //Obtenemos las etiquetas
+  QSqlQuery q = db_.exec("SELECT * "
+                         "FROM etiquetas;");
+
+  while (q.next()) {
+      //Añadimos la etiqueta al combo y como userData su ID
+      ui->comboEtiqueta->addItem(GetField(q,"name").toString(), GetField(q,"id").toInt());
+
+      //Añadimos la etiqueta a la tabla de etiquetas
+      int rowNumber = ui->tblEtiq->rowCount();
+      ui->tblEtiq->insertRow(rowNumber);
+      QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
+      ui->tblEtiq->setItem(rowNumber, 0, item);
+  }
+}
+
+void MainWindow::onTareasCellChanged(int row, int column) {
+    if (addingTarea_)
+        return;
+
+    addingTarea_ = true;
+
+    int checked = (ui->tblTareas->item(row, 2)->checkState() == Qt::Checked);
+
+    QSqlQuery query;
+
+    if (ui->tblTareas->item(row, 0)->data(Qt::UserRole).isNull()) {
+        query = db_.exec("INSERT INTO tareas (name, descripcion, date, done, id_categ) "
+                 "VALUES (" + QString("'%1','%2','%3','%4','%5');")
+                 .arg(ui->tblTareas->item(row, 0)->text())
+                 .arg(ui->txtTareaDescr->toPlainText())
+                 .arg(ui->tblTareas->item(row, 1)->text())
+                 .arg(checked)
+                 .arg(ui->comboCategoria->currentData().toInt()));
+        ui->tblTareas->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
+    } else {
+        query = db_.exec("UPDATE tareas "
+                 "SET " + QString("name='%1',descripcion='%2',date='%3',done='%4',id_categ='%5' ")
+                 .arg(ui->tblTareas->item(row, 0)->text())
+                 .arg(ui->txtTareaDescr->toPlainText())
+                 .arg(ui->tblTareas->item(row, 1)->text())
+                 .arg(checked)
+                 .arg(ui->comboCategoria->currentData().toInt()) +
+                 "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
+    }
+
+    addingTarea_ = false;
+}
+
+void MainWindow::onCreateCategoria(QString cat) {
+  QSqlQuery query = db_.exec("INSERT INTO categorias (name) "
+                             "VALUES (" + QString("'%1');")
+                             .arg(cat));
+
+  int index = ui->tblCateg->rowCount();
+  ui->tblCateg->insertRow(index);
+  ui->tblCateg->setItem(index, 0, new QTableWidgetItem(cat));
+
+  ui->comboCategoria->addItem(cat, query.lastInsertId());
 }

@@ -19,8 +19,15 @@ public:
 
 private slots:
     void onAddTarea();
-    void onTareasCellChanged(int row, int column);
+    void onAddCategoria();
+    void onAddEtiqueta();
+
     void onLoadTareas();
+    void onLoadCategorias();
+    void onLoadEtiquetas();
+
+    void onTareasCellChanged(int row, int column);
+    void onCreateCategoria(QString cat);
 
 private:
     Ui::MainWindow *ui;
