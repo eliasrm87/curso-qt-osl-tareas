@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include <QDebug>
+
 #include "dbconnection.h"
+#include "addcategorydialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,12 +29,17 @@ private slots:
     void onLoadEtiquetas();
 
     void onTareasCellChanged(int row, int column);
+    void onTareaFocused(int row, int column);
     void onCreateCategoria(QString cat);
+    void onCreateEtiqueta(QString etq);
 
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db_;
     bool addingTarea_;
+
+    AddCategoryDialog* cat_dialog_;
+    AddCategoryDialog* label_dialog_;
 };
 
 #endif // MAINWINDOW_H

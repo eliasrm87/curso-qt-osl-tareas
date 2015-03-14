@@ -3,7 +3,8 @@
 
 #include "addcategorydialog.h"
 
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow),
+  cat_dialog_(0), label_dialog_(0) {
     ui->setupUi(this);
 
     //Setup database
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     connect(ui->actionNuevaTarea, SIGNAL(triggered()), this, SLOT(onAddTarea()));
     connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
+    connect(ui->tblTareas, SIGNAL(cellActivated(int,int)), this, SLOT(onTareaFocused(int, int)));
     connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
     connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCategoria()));
     connect(ui->actionNuevaEtiq, SIGNAL(triggered()), this, SLOT(onAddEtiqueta()));
@@ -54,6 +56,12 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 }
 
 MainWindow::~MainWindow() {
+    if (cat_dialog_)
+        delete cat_dialog_;
+
+    if (label_dialog_)
+        delete label_dialog_;
+
     delete ui;
 }
 
@@ -79,23 +87,41 @@ void MainWindow::onAddTarea() {
 }
 
 void MainWindow::onAddCategoria() {
-  AddCategoryDialog* dialog = new AddCategoryDialog;
+  if (cat_dialog_)
+    delete cat_dialog_;
+
+  cat_dialog_ = new AddCategoryDialog;
   QStringList categories;
 
   for (int i = 0; i < ui->comboCategoria->count(); ++i)
     categories.append(ui->comboCategoria->itemText(i));
 
-  dialog->setExistingCategories(categories);
-  dialog->setWindowModality(Qt::ApplicationModal);
+  cat_dialog_->setExistingCategories(categories);
+  cat_dialog_->setWindowModality(Qt::ApplicationModal);
 
-  connect(dialog, SIGNAL(createCategory(QString)), this, SLOT(onCreateCategoria(QString)));
+  connect(cat_dialog_, SIGNAL(createCategory(QString)), this, SLOT(onCreateCategoria(QString)));
 
-  dialog->setVisible(true);
-  dialog->show();
+  cat_dialog_->setVisible(true);
+  cat_dialog_->show();
 }
 
 void MainWindow::onAddEtiqueta() {
+  if (label_dialog_)
+    delete label_dialog_;
 
+  label_dialog_ = new AddCategoryDialog;
+  QStringList labels;
+
+  for (int i = 0; i < ui->comboEtiqueta->count(); ++i)
+    labels.append(ui->comboEtiqueta->itemText(i));
+
+  label_dialog_->setExistingCategories(labels);
+  label_dialog_->setWindowModality(Qt::ApplicationModal);
+
+  connect(label_dialog_, SIGNAL(createCategory(QString)), this, SLOT(onCreateEtiqueta(QString)));
+
+  label_dialog_->setVisible(true);
+  label_dialog_->show();
 }
 
 void MainWindow::onLoadTareas() {
@@ -206,6 +232,14 @@ void MainWindow::onTareasCellChanged(int row, int column) {
     addingTarea_ = false;
 }
 
+void MainWindow::onTareaFocused(int row, int /*column*/) {
+  qDebug() << row;
+  QSqlQuery q = db_.exec("SELECT descripcion "
+                         "FROM tareas"
+                         "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
+  ui->txtTareaDescr->setText(GetField(q, "descripcion").toString());
+}
+
 void MainWindow::onCreateCategoria(QString cat) {
   QSqlQuery query = db_.exec("INSERT INTO categorias (name) "
                              "VALUES (" + QString("'%1');")
@@ -216,4 +250,17 @@ void MainWindow::onCreateCategoria(QString cat) {
   ui->tblCateg->setItem(index, 0, new QTableWidgetItem(cat));
 
   ui->comboCategoria->addItem(cat, query.lastInsertId());
+}
+
+
+void MainWindow::onCreateEtiqueta(QString etq) {
+  QSqlQuery query = db_.exec("INSERT INTO etiquetas (name) "
+                             "VALUES (" + QString("'%1');")
+                             .arg(etq));
+
+  int index = ui->tblEtiq->rowCount();
+  ui->tblEtiq->insertRow(index);
+  ui->tblEtiq->setItem(index, 0, new QTableWidgetItem(etq));
+
+  ui->comboEtiqueta->addItem(etq, query.lastInsertId());
 }
