@@ -29,7 +29,9 @@ private slots:
     void onLoadEtiquetas();
 
     void onTareasCellChanged(int row, int column);
-    void onTareaFocused(int row, int column);
+    void onSelectCell(int row, int column);
+    void onTareaDescrChanged();
+
     void onCreateCategoria(QString cat);
     void onCreateEtiqueta(QString etq);
 

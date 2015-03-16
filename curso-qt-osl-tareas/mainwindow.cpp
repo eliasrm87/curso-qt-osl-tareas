@@ -37,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     connect(ui->actionNuevaTarea, SIGNAL(triggered()), this, SLOT(onAddTarea()));
     connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
-    connect(ui->tblTareas, SIGNAL(cellActivated(int,int)), this, SLOT(onTareaFocused(int, int)));
+    connect(ui->tblTareas, SIGNAL(cellClicked(int,int)), this, SLOT(onSelectCell(int,int)));
+    connect(ui->txtTareaDescr, SIGNAL(textChanged()), this, SLOT(onTareaDescrChanged()));
     connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
     connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCategoria()));
     connect(ui->actionNuevaEtiq, SIGNAL(triggered()), this, SLOT(onAddEtiqueta()));
@@ -199,17 +200,19 @@ void MainWindow::onLoadEtiquetas() {
   }
 }
 
-void MainWindow::onTareasCellChanged(int row, int column) {
+void MainWindow::onTareasCellChanged(int row, int /*column*/) {
     if (addingTarea_)
         return;
 
     addingTarea_ = true;
+    qDebug() << "TareasCellChanged";
 
     int checked = (ui->tblTareas->item(row, 2)->checkState() == Qt::Checked);
 
     QSqlQuery query;
+    QVariant taskID = ui->tblTareas->item(row, 0)->data(Qt::UserRole);
 
-    if (ui->tblTareas->item(row, 0)->data(Qt::UserRole).isNull()) {
+    if (taskID.isNull()) {
         query = db_.exec("INSERT INTO tareas (name, descripcion, date, done, id_categ) "
                  "VALUES (" + QString("'%1','%2','%3','%4','%5');")
                  .arg(ui->tblTareas->item(row, 0)->text())
@@ -218,26 +221,34 @@ void MainWindow::onTareasCellChanged(int row, int column) {
                  .arg(checked)
                  .arg(ui->comboCategoria->currentData().toInt()));
         ui->tblTareas->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
-    } else {
-        query = db_.exec("UPDATE tareas "
-                 "SET " + QString("name='%1',descripcion='%2',date='%3',done='%4',id_categ='%5' ")
-                 .arg(ui->tblTareas->item(row, 0)->text())
-                 .arg(ui->txtTareaDescr->toPlainText())
-                 .arg(ui->tblTareas->item(row, 1)->text())
-                 .arg(checked)
-                 .arg(ui->comboCategoria->currentData().toInt()) +
-                 "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
+    }
+    else {
+        query = db_.exec("UPDATE tareas SET " +
+                         QString("name='%1',descripcion='%2',date='%3',done='%4' ")
+                         .arg(ui->tblTareas->item(row, 0)->text())
+                         .arg(ui->txtTareaDescr->toPlainText())
+                         .arg(ui->tblTareas->item(row, 1)->text())
+                         .arg(checked) +
+                         "WHERE id = " + taskID.toString() + ";");
     }
 
     addingTarea_ = false;
 }
 
-void MainWindow::onTareaFocused(int row, int /*column*/) {
-  qDebug() << row;
+void MainWindow::onSelectCell(int row, int /*column*/) {
   QSqlQuery q = db_.exec("SELECT descripcion "
-                         "FROM tareas"
+                         "FROM tareas "
                          "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
-  ui->txtTareaDescr->setText(GetField(q, "descripcion").toString());
+
+  QString desc;
+  if (q.next())
+    desc = GetField(q, "descripcion").toString();
+
+  ui->txtTareaDescr->setText(desc);
+}
+
+void MainWindow::onTareaDescrChanged() {
+  onTareasCellChanged(ui->tblTareas->currentRow(), ui->tblTareas->currentColumn());
 }
 
 void MainWindow::onCreateCategoria(QString cat) {
@@ -251,7 +262,6 @@ void MainWindow::onCreateCategoria(QString cat) {
 
   ui->comboCategoria->addItem(cat, query.lastInsertId());
 }
-
 
 void MainWindow::onCreateEtiqueta(QString etq) {
   QSqlQuery query = db_.exec("INSERT INTO etiquetas (name) "
