@@ -6,6 +6,7 @@
 
 #include "dbconnection.h"
 #include "addcategorydialog.h"
+#include "labelsmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -37,7 +38,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
     QSqlDatabase db_;
+    LabelsModel labelsModel_;
     bool addingTarea_;
 
     AddCategoryDialog* cat_dialog_;

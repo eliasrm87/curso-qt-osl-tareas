@@ -43,6 +43,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCategoria()));
     connect(ui->actionNuevaEtiq, SIGNAL(triggered()), this, SLOT(onAddEtiqueta()));
 
+    ui->tblEtiq->setModel(&labelsModel_);
+    ui->comboEtiqueta->setModel(&labelsModel_);
+    ui->listEtiqueta->setModel(&labelsModel_);
+
     addingTarea_ = false;
 
     onLoadCategorias();
@@ -111,12 +115,7 @@ void MainWindow::onAddEtiqueta() {
     delete label_dialog_;
 
   label_dialog_ = new AddCategoryDialog;
-  QStringList labels;
-
-  for (int i = 0; i < ui->comboEtiqueta->count(); ++i)
-    labels.append(ui->comboEtiqueta->itemText(i));
-
-  label_dialog_->setExistingCategories(labels);
+  label_dialog_->setExistingCategories(labelsModel_.stringList());
   label_dialog_->setWindowModality(Qt::ApplicationModal);
 
   connect(label_dialog_, SIGNAL(createCategory(QString)), this, SLOT(onCreateEtiqueta(QString)));
@@ -190,13 +189,7 @@ void MainWindow::onLoadEtiquetas() {
 
   while (q.next()) {
       //Añadimos la etiqueta al combo y como userData su ID
-      ui->comboEtiqueta->addItem(GetField(q,"name").toString(), GetField(q,"id").toInt());
-
-      //Añadimos la etiqueta a la tabla de etiquetas
-      int rowNumber = ui->tblEtiq->rowCount();
-      ui->tblEtiq->insertRow(rowNumber);
-      QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
-      ui->tblEtiq->setItem(rowNumber, 0, item);
+      labelsModel_.addLabel(GetField(q, "name").toString(), Qt::Unchecked, GetField(q, "id"));
   }
 }
 
@@ -205,7 +198,6 @@ void MainWindow::onTareasCellChanged(int row, int /*column*/) {
         return;
 
     addingTarea_ = true;
-    qDebug() << "TareasCellChanged";
 
     int checked = (ui->tblTareas->item(row, 2)->checkState() == Qt::Checked);
 
@@ -268,9 +260,5 @@ void MainWindow::onCreateEtiqueta(QString etq) {
                              "VALUES (" + QString("'%1');")
                              .arg(etq));
 
-  int index = ui->tblEtiq->rowCount();
-  ui->tblEtiq->insertRow(index);
-  ui->tblEtiq->setItem(index, 0, new QTableWidgetItem(etq));
-
-  ui->comboEtiqueta->addItem(etq, query.lastInsertId());
+  labelsModel_.addLabel(etq, Qt::Unchecked, query.lastInsertId());
 }
