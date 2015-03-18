@@ -28,9 +28,13 @@ public:
 
   void addLabel(const QString& labelName, Qt::CheckState checked, QVariant id);
 
+signals:
+  void checkChanged(int row);
+
 private:
   QStringList strings_;
   QVector<Qt::CheckState> checked_;
+  QVector<qlonglong> ids_;
 
 };
 

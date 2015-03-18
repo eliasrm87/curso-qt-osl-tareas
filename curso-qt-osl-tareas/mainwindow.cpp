@@ -32,16 +32,18 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     db_.exec("CREATE TABLE IF NOT EXISTS tareas_etiq ("
               "id_tarea INTEGER,"
-              "id_etiq INTEGER"
-              ");");
+              "id_etiq INTEGER,"
+              "PRIMARY KEY(id_tarea, id_etiq));");
 
     connect(ui->actionNuevaTarea, SIGNAL(triggered()), this, SLOT(onAddTarea()));
     connect(ui->tblTareas, SIGNAL(cellChanged(int,int)), this, SLOT(onTareasCellChanged(int,int)));
     connect(ui->tblTareas, SIGNAL(cellClicked(int,int)), this, SLOT(onSelectCell(int,int)));
     connect(ui->txtTareaDescr, SIGNAL(textChanged()), this, SLOT(onTareaDescrChanged()));
     connect(ui->comboCategoria, SIGNAL(currentIndexChanged(int)), this, SLOT(onLoadTareas()));
+    connect(ui->comboEtiqueta, SIGNAL(currentIndexChanged(int)), this, SLOT(onFilterEtiquetas(int)));
     connect(ui->actionNuevaCateg, SIGNAL(triggered()), this, SLOT(onAddCategoria()));
     connect(ui->actionNuevaEtiq, SIGNAL(triggered()), this, SLOT(onAddEtiqueta()));
+    connect(&labelsModel_, SIGNAL(checkChanged(int)), this, SLOT(onUpdateEtiquetas(int)));
 
     ui->tblEtiq->setModel(&labelsModel_);
     ui->comboEtiqueta->setModel(&labelsModel_);
@@ -193,6 +195,10 @@ void MainWindow::onLoadEtiquetas() {
   }
 }
 
+void MainWindow::onFilterEtiquetas(int index) {
+
+}
+
 void MainWindow::onTareasCellChanged(int row, int /*column*/) {
     if (addingTarea_)
         return;
@@ -261,4 +267,25 @@ void MainWindow::onCreateEtiqueta(QString etq) {
                              .arg(etq));
 
   labelsModel_.addLabel(etq, Qt::Unchecked, query.lastInsertId());
+}
+
+void MainWindow::onUpdateEtiquetas(int row) {
+  QModelIndex index = labelsModel_.index(row, 0);
+  QTableWidgetItem* itm = ui->tblTareas->currentItem();
+
+  if (itm) {
+    bool checked = labelsModel_.data(index, Qt::CheckStateRole).toBool();
+    int id_tarea = itm->data(Qt::UserRole).toInt();
+    int id_etiq = labelsModel_.data(index, Qt::UserRole).toInt();
+
+    QString queryStr;
+    if (checked)
+      queryStr = QString("INSERT INTO tareas_etiq (id_tarea, id_etiq) "
+                         "VALUES (%1, %2);").arg(id_tarea).arg(id_etiq);
+    else
+      queryStr = QString("DELETE FROM tareas_etiq "
+                         "WHERE id_tarea = %1 AND id_etiq = %2;").arg(id_tarea).arg(id_etiq);
+
+    db_.exec(queryStr);
+  }
 }

@@ -28,6 +28,7 @@ private slots:
     void onLoadTareas();
     void onLoadCategorias();
     void onLoadEtiquetas();
+    void onFilterEtiquetas(int index);
 
     void onTareasCellChanged(int row, int column);
     void onSelectCell(int row, int column);
@@ -35,6 +36,7 @@ private slots:
 
     void onCreateCategoria(QString cat);
     void onCreateEtiqueta(QString etq);
+    void onUpdateEtiquetas(int row);
 
 private:
     Ui::MainWindow *ui;

@@ -1,4 +1,5 @@
 #include "labelsmodel.h"
+#include <QDebug>
 
 LabelsModel::LabelsModel(QObject *parent): QAbstractTableModel(parent) {
 
@@ -24,6 +25,7 @@ bool LabelsModel::insertRows(int row, int count, const QModelIndex& parent) {
   for (int i = 0; i < count; ++i) {
     strings_.insert(row, "");
     checked_.insert(row, Qt::Unchecked);
+    ids_.insert(row, 0);
   }
 
   endInsertRows();
@@ -38,6 +40,7 @@ bool LabelsModel::removeRows(int row, int count, const QModelIndex& parent) {
     for (int i = 0; i < count; ++i) {
       strings_.removeAt(row);
       checked_.removeAt(row);
+      ids_.removeAt(row);
     }
 
     success = true;
@@ -62,11 +65,15 @@ QVariant LabelsModel::data(const QModelIndex& index, int role) const {
   if (index.row() < 0 || index.row() >= rowCount())
     return QVariant();
 
-  if (role == Qt::DisplayRole || role == Qt::EditRole)
+  switch (role) {
+  case Qt::DisplayRole:
+  case Qt::EditRole:
     return strings_.at(index.row());
-
-  if (role == Qt::CheckStateRole)
+  case Qt::CheckStateRole:
     return checked_.at(index.row());
+  case Qt::UserRole:
+    return ids_.at(index.row());
+  }
 
   return QVariant();
 }
@@ -75,8 +82,8 @@ QVariant LabelsModel::headerData(int section, Qt::Orientation orientation, int r
   if (role == Qt::DisplayRole) {
     if (section == 0 && orientation == Qt::Horizontal)
       return tr("Etiqueta");
-    else
-      return data(index(section, 0), Qt::UserRole);
+    else if (orientation == Qt::Vertical)
+      return section + 1;
   }
 
   return QVariant();
@@ -86,13 +93,21 @@ bool LabelsModel::setData(const QModelIndex& index, const QVariant& value, int r
   if (index.row() < 0 || index.row() >= rowCount())
     return false;
 
-  if (role == Qt::DisplayRole || role == Qt::EditRole) {
+  switch (role) {
+  case Qt::DisplayRole:
+  case Qt::EditRole:
     strings_.replace(index.row(), value.toString());
     emit(dataChanged(index, index));
-  }
-  else if (role == Qt::CheckStateRole) {
+    break;
+  case Qt::CheckStateRole:
     checked_[index.row()] = static_cast<Qt::CheckState>(value.toUInt());
     emit(dataChanged(index, index));
+    emit(checkChanged(index.row()));
+    break;
+  case Qt::UserRole:
+    ids_[index.row()] = value.toInt();
+    emit(dataChanged(index, index));
+    break;
   }
 
   return true;
