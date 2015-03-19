@@ -135,15 +135,6 @@
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0">
-             <widget class="QTableWidget" name="tblCateg">
-              <column>
-               <property name="text">
-                <string>Categoria</string>
-               </property>
-              </column>
-             </widget>
-            </item>
             <item row="1" column="0">
              <widget class="QTextEdit" name="txtCategDescr">
               <property name="maximumSize">
@@ -153,6 +144,9 @@
                </size>
               </property>
              </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QTableView" name="tblCateg"/>
             </item>
            </layout>
           </item>

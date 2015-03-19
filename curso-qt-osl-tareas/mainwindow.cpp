@@ -45,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->actionNuevaEtiq, SIGNAL(triggered()), this, SLOT(onAddEtiqueta()));
     connect(&labelsModel_, SIGNAL(checkChanged(int)), this, SLOT(onUpdateEtiquetas(int)));
 
+    ui->tblCateg->setModel(&categoriesModel_);
+    ui->comboCategoria->setModel(&categoriesModel_);
     ui->tblEtiq->setModel(&labelsModel_);
     ui->comboEtiqueta->setModel(&labelsModel_);
     ui->listEtiqueta->setModel(&labelsModel_);
@@ -73,6 +75,8 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::onAddTarea() {
+  qDebug() << "onAddTarea()";
+
     // No añadimos tareas si está seleccionada la categoría "Todas"
     if (ui->comboCategoria->currentData().toInt() == -1)
         return;
@@ -97,11 +101,10 @@ void MainWindow::onAddCategoria() {
   if (cat_dialog_)
     delete cat_dialog_;
 
-  cat_dialog_ = new AddCategoryDialog;
-  QStringList categories;
+  qDebug() << "onAddCategoria()";
 
-  for (int i = 0; i < ui->comboCategoria->count(); ++i)
-    categories.append(ui->comboCategoria->itemText(i));
+  cat_dialog_ = new AddCategoryDialog;
+  QStringList categories = categoriesModel_.stringList();
 
   cat_dialog_->setExistingCategories(categories);
   cat_dialog_->setWindowModality(Qt::ApplicationModal);
@@ -113,6 +116,8 @@ void MainWindow::onAddCategoria() {
 }
 
 void MainWindow::onAddEtiqueta() {
+  qDebug() << "onAddEtiqueta()";
+
   if (label_dialog_)
     delete label_dialog_;
 
@@ -127,15 +132,19 @@ void MainWindow::onAddEtiqueta() {
 }
 
 void MainWindow::onLoadTareas() {
+  qDebug() << "onLoadTareas()";
+
     addingTarea_ = true;
 
     while (ui->tblTareas->rowCount())
         ui->tblTareas->removeRow(0);
 
     //Obtenemos las tareas
+    int row = ui->comboCategoria->currentIndex();
+    QVariant catData = categoriesModel_.data(categoriesModel_.index(row), Qt::UserRole);
+
     QString query = "SELECT * FROM tareas ";
-    QVariant catData = ui->comboCategoria->currentData();
-    if (catData.toInt() != -1)
+    if (!catData.isNull() && catData.toInt() != -1)
       query += "WHERE id_categ = " + catData.toString();
 
     QSqlQuery q = db_.exec(query);
@@ -165,26 +174,33 @@ void MainWindow::onLoadTareas() {
 }
 
 void MainWindow::onLoadCategorias() {
+  qDebug() << "onLoadCategorias()";
+
   // Categoría general para todas las categorías
-  ui->comboCategoria->addItem("Todas", -1);
+  int row = categoriesModel_.rowCount();
+  categoriesModel_.insertRow(row);
+
+  QModelIndex idx = categoriesModel_.index(row);
+  categoriesModel_.setData(idx, "Todas");
+  categoriesModel_.setData(idx, -1, Qt::UserRole);
 
   //Obtenemos las categorias
   QSqlQuery q = db_.exec("SELECT * "
                          "FROM categorias;");
 
   while (q.next()) {
-      //Añadimos la categoria al combo y como userData su ID
-      ui->comboCategoria->addItem(GetField(q,"name").toString(), GetField(q,"id").toInt());
+    row = categoriesModel_.rowCount();
+    categoriesModel_.insertRow(row);
 
-      //Añadimos la categoria a la tabla de categorias
-      int rowNumber = ui->tblCateg->rowCount();
-      ui->tblCateg->insertRow(rowNumber);
-      QTableWidgetItem* item = new QTableWidgetItem(GetField(q, "name").toString());
-      ui->tblCateg->setItem(rowNumber, 0, item);
+    idx = categoriesModel_.index(row);
+    categoriesModel_.setData(idx, GetField(q,"name"));
+    categoriesModel_.setData(idx, GetField(q,"id"), Qt::UserRole);
   }
 }
 
 void MainWindow::onLoadEtiquetas() {
+  qDebug() << "onLoadEtiquetas()";
+
   //Obtenemos las etiquetas
   QSqlQuery q = db_.exec("SELECT * "
                          "FROM etiquetas;");
@@ -196,12 +212,16 @@ void MainWindow::onLoadEtiquetas() {
 }
 
 void MainWindow::onFilterEtiquetas(int index) {
+  qDebug() << "onFilterEtiquetas()";
+
 
 }
 
 void MainWindow::onTareasCellChanged(int row, int /*column*/) {
     if (addingTarea_)
         return;
+
+    qDebug() << "onTareasCellChanged()";
 
     addingTarea_ = true;
 
@@ -234,6 +254,8 @@ void MainWindow::onTareasCellChanged(int row, int /*column*/) {
 }
 
 void MainWindow::onSelectCell(int row, int /*column*/) {
+  qDebug() << "onSelectCell()";
+
   QSqlQuery q = db_.exec("SELECT descripcion "
                          "FROM tareas "
                          "WHERE id = " + ui->tblTareas->item(row, 0)->data(Qt::UserRole).toString() + ";");
@@ -246,22 +268,29 @@ void MainWindow::onSelectCell(int row, int /*column*/) {
 }
 
 void MainWindow::onTareaDescrChanged() {
+  qDebug() << "onTareaDescrChanged()";
+
   onTareasCellChanged(ui->tblTareas->currentRow(), ui->tblTareas->currentColumn());
 }
 
 void MainWindow::onCreateCategoria(QString cat) {
+  qDebug() << "onCreateCategoria()";
+
   QSqlQuery query = db_.exec("INSERT INTO categorias (name) "
                              "VALUES (" + QString("'%1');")
                              .arg(cat));
 
-  int index = ui->tblCateg->rowCount();
-  ui->tblCateg->insertRow(index);
-  ui->tblCateg->setItem(index, 0, new QTableWidgetItem(cat));
+  int row = categoriesModel_.rowCount();
+  categoriesModel_.insertRow(row);
+  QModelIndex idx = categoriesModel_.index(row);
 
-  ui->comboCategoria->addItem(cat, query.lastInsertId());
+  categoriesModel_.setData(idx, cat);
+  categoriesModel_.setData(idx, query.lastInsertId(), Qt::UserRole);
 }
 
 void MainWindow::onCreateEtiqueta(QString etq) {
+  qDebug() << "onCreateEtiqueta()";
+
   QSqlQuery query = db_.exec("INSERT INTO etiquetas (name) "
                              "VALUES (" + QString("'%1');")
                              .arg(etq));
@@ -270,6 +299,8 @@ void MainWindow::onCreateEtiqueta(QString etq) {
 }
 
 void MainWindow::onUpdateEtiquetas(int row) {
+  qDebug() << "onUpdateEtiquetas()";
+
   QModelIndex index = labelsModel_.index(row, 0);
   QTableWidgetItem* itm = ui->tblTareas->currentItem();
 

@@ -15,13 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     addcategorydialog.cpp \
-    labelsmodel.cpp
+    labelsmodel.cpp \
+    stringlistmodel.cpp
 
 HEADERS  += \
     dbconnection.h \
     mainwindow.h \
     addcategorydialog.h \
-    labelsmodel.h
+    labelsmodel.h \
+    stringlistmodel.h
 
 FORMS += \
     mainwindow.ui \

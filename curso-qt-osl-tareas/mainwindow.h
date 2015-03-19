@@ -7,6 +7,7 @@
 #include "dbconnection.h"
 #include "addcategorydialog.h"
 #include "labelsmodel.h"
+#include "stringlistmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -43,6 +44,7 @@ private:
 
     QSqlDatabase db_;
     LabelsModel labelsModel_;
+    StringListModel categoriesModel_;
     bool addingTarea_;
 
     AddCategoryDialog* cat_dialog_;
