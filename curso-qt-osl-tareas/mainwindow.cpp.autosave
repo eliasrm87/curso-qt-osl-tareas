@@ -79,7 +79,7 @@ void MainWindow::onAddCategorias(){
     int rowNumber = ui->tblCateg->rowCount();
     ui->tblCateg->insertRow(rowNumber);
     ui->tblCateg->setItem(rowNumber, 0, new QTableWidgetItem(""));
- ui->comboCategoria->addItem(ui->tblCateg->item(rowNumber, 0)->text(), ui->tblCateg->item(rowNumber, 0)->data(Qt::UserRole));
+
 
 }
 
@@ -88,7 +88,7 @@ void MainWindow::onCategCellChanged(int row){
 
         QSqlQuery query;
 
-
+        if (ui->tblCateg->item(row, 0)->data(Qt::UserRole).isNull()) {
 
                       query = db_.exec("INSERT INTO categorias (name, descripcion) "\
                              "VALUES ("+QString("'%1','%2';" )\
@@ -96,7 +96,7 @@ void MainWindow::onCategCellChanged(int row){
                              .arg(ui->txtCategDescr->toPlainText()));
 
             ui->tblCateg->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
-
+        } else {
             int rowNumber = row;
             qDebug() << "Entro en el update";
             query = db_.exec("UPDATE categorias "
@@ -104,9 +104,8 @@ void MainWindow::onCategCellChanged(int row){
                      .arg(ui->tblCateg->item(row, 0)->text())\
                      .arg(ui->tblCateg->item(row, 1)->text()) +
                      "WHERE id = " + ui->tblCateg->item(row, 0)->data(Qt::UserRole).toString() + ";");
-             ui->tblCateg->item(row, 0)->setData(Qt::UserRole, query.lastInsertId());
             ui->comboCategoria->addItem(ui->tblCateg->item(rowNumber, 0)->text(), ui->tblCateg->item(rowNumber, 0)->data(Qt::UserRole));
-
+        }
 
 }
 MainWindow::~MainWindow()
