@@ -1,3 +1,11 @@
+/*
+ *  Adrián Rodríguez Bazaga
+ *  alu0100826456@ull.edu.es
+ *  Gestor de Tareas - Curso de QT
+ *
+ * */
+
+
 #ifndef DBCONNECTION_H
 #define DBCONNECTION_H
 

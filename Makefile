@@ -15,7 +15,7 @@ CXX           = clang++
 DEFINES       = -DQT_QML_DEBUG -DQT_DECLARATIVE_DEBUG -DQT_WIDGETS_LIB -DQT_SQL_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I../../../programas/Qt5/5.2.1/gcc_64/mkspecs/linux-clang -Icurso-qt-osl-tareas -I../../../programas/Qt5/5.2.1/gcc_64/include -I../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets -I../../../programas/Qt5/5.2.1/gcc_64/include/QtSql -I../../../programas/Qt5/5.2.1/gcc_64/include/QtGui -I../../../programas/Qt5/5.2.1/gcc_64/include/QtCore -I. -I. -I.
+INCPATH       = -I../../../programas/Qt5/5.2.1/gcc_64/mkspecs/linux-clang -Icurso-qt-osl-tareas -I../../../programas/Qt5/5.2.1/gcc_64/include -I../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets -I../../../programas/Qt5/5.2.1/gcc_64/include/QtSql -I../../../programas/Qt5/5.2.1/gcc_64/include/QtGui -I../../../programas/Qt5/5.2.1/gcc_64/include/QtCore -I. -I.
 LINK          = clang++
 LFLAGS        = -ccc-gcc-name g++ -Wl,-rpath,/home/elias/programas/Qt5/5.2.1/gcc_64 -Wl,-rpath,/home/elias/programas/Qt5/5.2.1/gcc_64/lib
 LIBS          = $(SUBLIBS) -L/home/elias/programas/Qt5/5.2.1/gcc_64/lib -lQt5Widgets -lQt5Sql -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -183,7 +183,7 @@ first: all
 
 all: Makefile $(TARGET)
 
-$(TARGET): ui_mainwindow.h $(OBJECTS)  
+$(TARGET):  $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: curso-qt-osl-tareas/curso-qt-osl-tareas.pro ../../../programas/Qt5/5.2.1/gcc_64/mkspecs/features/spec_pre.prf \
@@ -408,7 +408,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/curso-qt-osl-tareas-exe1.0.0 || mkdir -p .tmp/curso-qt-osl-tareas-exe1.0.0
-	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/curso-qt-osl-tareas-exe1.0.0/ && $(COPY_FILE) --parents curso-qt-osl-tareas/dbconnection.h curso-qt-osl-tareas/mainwindow.h .tmp/curso-qt-osl-tareas-exe1.0.0/ && $(COPY_FILE) --parents curso-qt-osl-tareas/main.cpp curso-qt-osl-tareas/mainwindow.cpp .tmp/curso-qt-osl-tareas-exe1.0.0/ && $(COPY_FILE) --parents curso-qt-osl-tareas/mainwindow.ui .tmp/curso-qt-osl-tareas-exe1.0.0/ && (cd `dirname .tmp/curso-qt-osl-tareas-exe1.0.0` && $(TAR) curso-qt-osl-tareas-exe1.0.0.tar curso-qt-osl-tareas-exe1.0.0 && $(COMPRESS) curso-qt-osl-tareas-exe1.0.0.tar) && $(MOVE) `dirname .tmp/curso-qt-osl-tareas-exe1.0.0`/curso-qt-osl-tareas-exe1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/curso-qt-osl-tareas-exe1.0.0
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/curso-qt-osl-tareas-exe1.0.0/ && $(COPY_FILE) --parents curso-qt-osl-tareas/mainwindow.h curso-qt-osl-tareas/dbconnection.h .tmp/curso-qt-osl-tareas-exe1.0.0/ && $(COPY_FILE) --parents curso-qt-osl-tareas/main.cpp curso-qt-osl-tareas/mainwindow.cpp .tmp/curso-qt-osl-tareas-exe1.0.0/ && (cd `dirname .tmp/curso-qt-osl-tareas-exe1.0.0` && $(TAR) curso-qt-osl-tareas-exe1.0.0.tar curso-qt-osl-tareas-exe1.0.0 && $(COMPRESS) curso-qt-osl-tareas-exe1.0.0.tar) && $(MOVE) `dirname .tmp/curso-qt-osl-tareas-exe1.0.0`/curso-qt-osl-tareas-exe1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/curso-qt-osl-tareas-exe1.0.0
 
 
 clean:compiler_clean 
@@ -545,47 +545,23 @@ moc_mainwindow.cpp: ../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QMainW
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qicon.h \
-		curso-qt-osl-tareas/dbconnection.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlDatabase \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqldatabase.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsql.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlQuery \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlquery.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlError \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlerror.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlRecord \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlrecord.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlField \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlfield.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/QDateTime \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qdatetime.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QMessageBox \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qmessagebox.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qdialog.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/QDesktopServices \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qdesktopservices.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qstandardpaths.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/QDir \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qdir.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qfileinfo.h \
 		curso-qt-osl-tareas/mainwindow.h
 	/home/elias/programas/Qt5/5.2.1/gcc_64/bin/moc $(DEFINES) $(INCPATH) curso-qt-osl-tareas/mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_mainwindow.h
+compiler_uic_make_all:
 compiler_uic_clean:
-	-$(DEL_FILE) ui_mainwindow.h
-ui_mainwindow.h: curso-qt-osl-tareas/mainwindow.ui
-	/home/elias/programas/Qt5/5.2.1/gcc_64/bin/uic curso-qt-osl-tareas/mainwindow.ui -o ui_mainwindow.h
-
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_header_clean compiler_uic_clean 
+compiler_clean: compiler_moc_header_clean 
 
 ####### Compile
 
@@ -701,29 +677,9 @@ main.o: curso-qt-osl-tareas/main.cpp curso-qt-osl-tareas/mainwindow.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qicon.h \
-		curso-qt-osl-tareas/dbconnection.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlDatabase \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqldatabase.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsql.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlQuery \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlquery.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlError \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlerror.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlRecord \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlrecord.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlField \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlfield.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/QDateTime \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qdatetime.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QMessageBox \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qmessagebox.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qdialog.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/QDesktopServices \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qdesktopservices.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qstandardpaths.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/QDir \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qdir.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qfileinfo.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QApplication \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qapplication.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qcoreapplication.h \
@@ -845,66 +801,9 @@ mainwindow.o: curso-qt-osl-tareas/mainwindow.cpp curso-qt-osl-tareas/mainwindow.
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qtouchdevice.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qtabwidget.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qicon.h \
-		curso-qt-osl-tareas/dbconnection.h \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlDatabase \
 		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqldatabase.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsql.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlQuery \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlquery.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlError \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlerror.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlRecord \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlrecord.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/QSqlField \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsqlfield.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/QDateTime \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qdatetime.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QMessageBox \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qmessagebox.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qdialog.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/QDesktopServices \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qdesktopservices.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qstandardpaths.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/QDir \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qdir.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qfileinfo.h \
-		ui_mainwindow.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/QVariant \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QAction \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qaction.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QApplication \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qapplication.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qcoreapplication.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qeventloop.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qguiapplication.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qinputmethod.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QButtonGroup \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QHeaderView \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qheaderview.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qframe.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qabstractitemmodel.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qitemselectionmodel.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtGui/qvalidator.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtCore/qregularexpression.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qslider.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qstyle.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qtabbar.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qrubberband.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QMenuBar \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qmenubar.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qmenu.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QStatusBar \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/qstatusbar.h \
-		../../../programas/Qt5/5.2.1/gcc_64/include/QtWidgets/QWidget
+		../../../programas/Qt5/5.2.1/gcc_64/include/QtSql/qsql.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o curso-qt-osl-tareas/mainwindow.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
