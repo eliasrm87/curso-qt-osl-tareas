@@ -21,11 +21,15 @@ private slots:
     void onAddTarea();
     void onTareasCellChanged(int row, int column);
     void onLoadTareas();
+    void onAddCategorias();
+    void onCategCellChanged(int row);
+    void onAddEtiquetas();
+    void onEtiqCellChanged(int row);
 
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db_;
-    bool addingTarea_;
+
 };
 
 #endif // MAINWINDOW_H
